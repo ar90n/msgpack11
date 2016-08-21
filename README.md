@@ -1,8 +1,8 @@
 What is msgpack11 ?
 ===============
 
-msgpack11 is a tiny MsgPack library for C++11, providing MsgPack parsing and serialization.
-This library is inspired by [json11](https://github.com/dropbox/json11).
+msgpack11 is a tiny MsgPack library for C++11, providing MsgPack parsing and serialization.  
+This library is inspired by [json11](https://github.com/dropbox/json11).  
 The API of msgpack11 is designed to be similar with json11.
 
 Installation
