@@ -112,8 +112,10 @@ public:
 
     bool is_null()      const { return type() == NUL; }
     bool is_bool()      const { return type() == BOOL; }
+    bool is_number()    const { return type() == FLOAT64; }
     bool is_float32()   const { return type() == FLOAT32; }
     bool is_float64()   const { return type() == FLOAT64; }
+    bool is_int()       const { return type() == INT32; }
     bool is_int8()      const { return type() == INT8; }
     bool is_int16()     const { return type() == INT16; }
     bool is_int32()     const { return type() == INT32; }
@@ -131,8 +133,10 @@ public:
     // Return the enclosed value if this is a number, 0 otherwise. Note that msgpack11 does not
     // distinguish between integer and non-integer numbers - number_value() and int_value()
     // can both be applied to a NUMBER-typed object.
+    double number_value() const;
     float float32_value() const;
     double float64_value() const;
+    int32_t int_value() const;
     int8_t int8_value() const;
     int16_t int16_value() const;
     int32_t int32_value() const;
@@ -216,8 +220,10 @@ protected:
     virtual bool equals(const MsgPackValue * other) const = 0;
     virtual bool less(const MsgPackValue * other) const = 0;
     virtual void dump(std::vector<uint8_t> &out) const = 0;
+    virtual double number_value() const;
     virtual float float32_value() const;
     virtual double float64_value() const;
+    virtual int32_t int_value() const;
     virtual int8_t int8_value() const;
     virtual int16_t int16_value() const;
     virtual int32_t int32_value() const;
