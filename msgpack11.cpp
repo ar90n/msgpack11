@@ -335,6 +335,10 @@ protected:
     explicit NumberValue(const T &value) : Value<tag, T>(value) {}
     explicit NumberValue(T &&value)      : Value<tag, T>(move(value)) {}
 
+    double  number_value()  const override { return static_cast<double>( Value<tag,T>::m_value ); }
+    float float32_value()   const override { return static_cast<float>( Value<tag,T>::m_value ); }
+    double float64_value()  const override { return static_cast<double>( Value<tag,T>::m_value ); }
+    int32_t int_value()     const override { return static_cast<int32_t>( Value<tag,T>::m_value ); }
     int8_t int8_value()     const override { return static_cast<int8_t>( Value<tag,T>::m_value ); }
     int16_t int16_value()   const override { return static_cast<int16_t>( Value<tag,T>::m_value ); }
     int32_t int32_value()   const override { return static_cast<int32_t>( Value<tag,T>::m_value ); }
@@ -343,8 +347,6 @@ protected:
     uint16_t uint16_value() const override { return static_cast<uint16_t>( Value<tag,T>::m_value ); }
     uint32_t uint32_value() const override { return static_cast<uint32_t>( Value<tag,T>::m_value ); }
     uint64_t uint64_value() const override { return static_cast<uint64_t>( Value<tag,T>::m_value ); }
-    float float32_value()   const override { return static_cast<float>( Value<tag,T>::m_value ); }
-    double float64_value()  const override { return static_cast<double>( Value<tag,T>::m_value ); }
 };
 
 class MsgPackFloat final : public NumberValue<MsgPack::FLOAT32, float> {
@@ -525,8 +527,10 @@ MsgPack::MsgPack(MsgPack::extension &&values)      : m_ptr(make_shared<MsgPackEx
  */
 
 MsgPack::Type MsgPack::type()                           const { return m_ptr->type(); }
+double MsgPack::number_value()                          const { return m_ptr->float64_value(); }
 float MsgPack::float32_value()                          const { return m_ptr->float32_value(); }
 double MsgPack::float64_value()                         const { return m_ptr->float64_value(); }
+int32_t MsgPack::int_value()                            const { return m_ptr->int32_value(); }
 int8_t MsgPack::int8_value()                            const { return m_ptr->int8_value(); }
 int16_t MsgPack::int16_value()                          const { return m_ptr->int16_value(); }
 int32_t MsgPack::int32_value()                          const { return m_ptr->int32_value(); }
@@ -544,8 +548,10 @@ const map<MsgPack, MsgPack> & MsgPack::object_items()   const { return m_ptr->ob
 const MsgPack & MsgPack::operator[] (size_t i)          const { return (*m_ptr)[i]; }
 const MsgPack & MsgPack::operator[] (const string &key) const { return (*m_ptr)[key]; }
 
+double                        MsgPackValue::number_value()              const { return 0.0; }
 float                         MsgPackValue::float32_value()             const { return 0.0f; }
 double                        MsgPackValue::float64_value()             const { return 0.0; }
+int32_t                       MsgPackValue::int_value()                 const { return 0; }
 int8_t                        MsgPackValue::int8_value()                const { return 0; }
 int16_t                       MsgPackValue::int16_value()               const { return 0; }
 int32_t                       MsgPackValue::int32_value()               const { return 0; }
