@@ -6,6 +6,7 @@
 #include <limits>
 #include <array>
 #include <tuple>
+#include <algorithm>
 #include <functional>
 #include <stdexcept>
 
@@ -772,7 +773,8 @@ struct MsgPackParser final {
         return std::make_tuple(type, std::move(data));
     }
 
-    static const std::vector< std::tuple<uint8_t, uint8_t, std::function< MsgPack(MsgPackParser*, uint8_t) > > > parsers;
+    using parser_element_type = std::tuple<uint8_t, uint8_t, std::function< MsgPack(MsgPackParser*, uint8_t) > >;
+    static const std::vector< parser_element_type > parsers;
 
     /* parse_msgpack()
      *
@@ -801,43 +803,44 @@ struct MsgPackParser final {
     }
 };
 
-const std::vector< std::tuple<uint8_t, uint8_t, std::function< MsgPack(MsgPackParser*, uint8_t) > > > MsgPackParser::parsers {
-    { 0x00, 0x7f, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_pos_fixint(first_byte)); } },
-    { 0x80, 0x8f, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_fixobject(first_byte)); } },
-    { 0x90, 0x9f, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_fixarray(first_byte)); } },
-    { 0xa0, 0xbf, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_fixstring(first_byte)); } },
-    { 0xc0, 0xc0, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_nil(first_byte)); } },
-    { 0xc1, 0xc1, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_invalid(first_byte)); } },
-    { 0xc2, 0xc3, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_bool(first_byte)); } },
-    { 0xc4, 0xc4, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_binary<uint8_t>()); } },
-    { 0xc5, 0xc5, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_binary<uint16_t>()); } },
-    { 0xc6, 0xc6, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_binary<uint32_t>()); } },
-    { 0xc7, 0xc7, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_extension<uint8_t>()); } },
-    { 0xc8, 0xc8, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_extension<uint16_t>()); } },
-    { 0xc9, 0xc9, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_extension<uint32_t>()); } },
-    { 0xca, 0xca, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<float>()); } },
-    { 0xcb, 0xcb, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<double>()); } },
-    { 0xcc, 0xcc, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<uint8_t>()); } },
-    { 0xcd, 0xcd, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<uint16_t>()); } },
-    { 0xce, 0xce, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<uint32_t>()); } },
-    { 0xcf, 0xcf, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<uint64_t>()); } },
-    { 0xd0, 0xd0, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<int8_t>()); } },
-    { 0xd1, 0xd1, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<int16_t>()); } },
-    { 0xd2, 0xd2, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<int32_t>()); } },
-    { 0xd3, 0xd3, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_arith<int64_t>()); } },
-    { 0xd4, 0xd4, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_fixext(1)); } },
-    { 0xd5, 0xd5, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_fixext(2)); } },
-    { 0xd6, 0xd6, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_fixext(4)); } },
-    { 0xd7, 0xd7, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_fixext(8)); } },
-    { 0xd8, 0xd8, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_fixext(16)); } },
-    { 0xd9, 0xd9, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_string<uint8_t>(first_byte)); } },
-    { 0xda, 0xda, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_string<uint16_t>(first_byte)); } },
-    { 0xdb, 0xdb, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_string<uint32_t>(first_byte)); } },
-    { 0xdc, 0xdc, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_array<uint16_t>()); } },
-    { 0xdd, 0xdd, [](MsgPackParser* that, uint8_t){ return MsgPack(that->parse_array<uint32_t>()); } },
-    { 0xde, 0xde, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_object<uint16_t>(first_byte)); } },
-    { 0xdf, 0xdf, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_object<uint32_t>(first_byte)); } },
-    { 0xe0, 0xff, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_neg_fixint(first_byte)); } }
+const std::vector< MsgPackParser::parser_element_type > MsgPackParser::parsers {
+    MsgPackParser::parser_element_type{ 0x00u, 0x7fu, [](MsgPackParser* that, uint8_t first_byte){ return MsgPack(that->parse_pos_fixint(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0x00u, 0x7fu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_pos_fixint(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0x80u, 0x8fu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_fixobject(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0x90u, 0x9fu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_fixarray(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xa0u, 0xbfu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_fixstring(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xc0u, 0xc0u, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_nil(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xc1u, 0xc1u, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_invalid(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xc2u, 0xc3u, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_bool(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xc4u, 0xc4u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_binary<uint8_t>()); }},
+    MsgPackParser::parser_element_type{ 0xc5u, 0xc5u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_binary<uint16_t>()); }},
+    MsgPackParser::parser_element_type{ 0xc6u, 0xc6u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_binary<uint32_t>()); }},
+    MsgPackParser::parser_element_type{ 0xc7u, 0xc7u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_extension<uint8_t>()); }},
+    MsgPackParser::parser_element_type{ 0xc8u, 0xc8u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_extension<uint16_t>()); }},
+    MsgPackParser::parser_element_type{ 0xc9u, 0xc9u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_extension<uint32_t>()); }},
+    MsgPackParser::parser_element_type{ 0xcau, 0xcau, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<float>()); }},
+    MsgPackParser::parser_element_type{ 0xcbu, 0xcbu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<double>()); }},
+    MsgPackParser::parser_element_type{ 0xccu, 0xccu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<uint8_t>()); }},
+    MsgPackParser::parser_element_type{ 0xcdu, 0xcdu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<uint16_t>()); }},
+    MsgPackParser::parser_element_type{ 0xceu, 0xceu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<uint32_t>()); }},
+    MsgPackParser::parser_element_type{ 0xcfu, 0xcfu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<uint64_t>()); }},
+    MsgPackParser::parser_element_type{ 0xd0u, 0xd0u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<int8_t>()); }},
+    MsgPackParser::parser_element_type{ 0xd1u, 0xd1u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<int16_t>()); }},
+    MsgPackParser::parser_element_type{ 0xd2u, 0xd2u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<int32_t>()); }},
+    MsgPackParser::parser_element_type{ 0xd3u, 0xd3u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_arith<int64_t>()); }},
+    MsgPackParser::parser_element_type{ 0xd4u, 0xd4u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_fixext(1)); }},
+    MsgPackParser::parser_element_type{ 0xd5u, 0xd5u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_fixext(2)); }},
+    MsgPackParser::parser_element_type{ 0xd6u, 0xd6u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_fixext(4)); }},
+    MsgPackParser::parser_element_type{ 0xd7u, 0xd7u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_fixext(8)); }},
+    MsgPackParser::parser_element_type{ 0xd8u, 0xd8u, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_fixext(16)); }},
+    MsgPackParser::parser_element_type{ 0xd9u, 0xd9u, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_string<uint8_t>(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xdau, 0xdau, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_string<uint16_t>(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xdbu, 0xdbu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_string<uint32_t>(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xdcu, 0xdcu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_array<uint16_t>()); }},
+    MsgPackParser::parser_element_type{ 0xddu, 0xddu, [](MsgPackParser* that, uint8_t) -> MsgPack { return MsgPack(that->parse_array<uint32_t>()); }},
+    MsgPackParser::parser_element_type{ 0xdeu, 0xdeu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_object<uint16_t>(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xdfu, 0xdfu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_object<uint32_t>(first_byte)); }},
+    MsgPackParser::parser_element_type{ 0xe0u, 0xffu, [](MsgPackParser* that, uint8_t first_byte) -> MsgPack { return MsgPack(that->parse_neg_fixint(first_byte)); }}
 };
 
 }//namespace {

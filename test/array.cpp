@@ -1,6 +1,7 @@
 #include <msgpack11.hpp>
 
 #include <iostream>
+#include <algorithm>
 
 #include <gtest/gtest.h>
 
@@ -16,7 +17,9 @@ TEST(MSGPACK_ARRAY, pack_unpack_fixarray)
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
     EXPECT_TRUE(parsed.is_array());
 
-    msgpack11::MsgPack::array v2{ parsed.array_items() };
+    msgpack11::MsgPack::array v2 = parsed.array_items();
+    msgpack11::MsgPack packed2{v2};
+
     EXPECT_TRUE(v1 == v2);
 }
 
@@ -34,7 +37,7 @@ TEST(MSGPACK_ARRAY, pack_unpack_array16_l)
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
     EXPECT_TRUE(parsed.is_array());
 
-    msgpack11::MsgPack::array v2{ parsed.array_items() };
+    msgpack11::MsgPack::array v2 = parsed.array_items();
     EXPECT_TRUE(v1 == v2);
 }
 
@@ -52,7 +55,7 @@ TEST(MSGPACK_ARRAY, pack_unpack_array16_h)
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
     EXPECT_TRUE(parsed.is_array());
 
-    msgpack11::MsgPack::array v2{ parsed.array_items() };
+    msgpack11::MsgPack::array v2 = parsed.array_items();
     EXPECT_TRUE(v1 == v2);
 }
 
@@ -72,7 +75,7 @@ TEST(MSGPACK_ARRAY, pack_unpack_array32_l)
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
     EXPECT_TRUE(parsed.is_array());
 
-    msgpack11::MsgPack::array v2{ parsed.array_items() };
+    msgpack11::MsgPack::array v2 = parsed.array_items();
     EXPECT_TRUE(v1 == v2);
 }
 
@@ -103,6 +106,6 @@ TEST(MSGPACK_ARRAY, pack_unpack_object_array)
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
     EXPECT_TRUE(parsed.is_array());
 
-    msgpack11::MsgPack::array v2{ parsed.array_items() };
+    msgpack11::MsgPack::array v2 = parsed.array_items();
     EXPECT_TRUE(v1 == v2);
 }

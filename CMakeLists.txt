@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
-project(msgpack11 VERSION 0.0.1 LANGUAGES CXX)
+project(msgpack11 VERSION 0.0.2 LANGUAGES CXX C)
 
-option(JSON11_BUILD_TESTS "Build unit tests" ON)
+option(MSGPACK11_BUILD_TESTS "Build unit tests" ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -11,8 +11,8 @@ target_include_directories(msgpack11 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(msgpack11 PRIVATE -fno-rtti -Wall -Wextra -Werror)
 configure_file("msgpack11.pc.in" "msgpack11.pc" @ONLY)
 
-if (JSON11_BUILD_TESTS)
-    enable_testing()
+if (MSGPACK11_BUILD_TESTS)
+  enable_testing()
   add_subdirectory(test)
 endif()
 

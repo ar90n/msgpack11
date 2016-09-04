@@ -10,6 +10,7 @@
 #include <set>
 #include <list>
 #include <limits>
+#include <algorithm>
 
 #include <gtest/gtest.h>
 
@@ -166,7 +167,7 @@ TYPED_TEST_P(IntegerToFloatingPointTest, simple_buffer)
     }
     for (unsigned int i = 0; i < v.size() ; i++) {
         integer_type val1 = v[i];
-        msgpack11::MsgPack packed{val1};
+        msgpack11::MsgPack packed(val1);
         std::string err;
         msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(packed.dump(), err ) };
         float_type val2 = (parsed.*ValueTypeTraits<float_type>::value)();
@@ -177,10 +178,10 @@ TYPED_TEST_P(IntegerToFloatingPointTest, simple_buffer)
 REGISTER_TYPED_TEST_CASE_P(IntegerToFloatingPointTest,
                            simple_buffer);
 
-typedef testing::Types<TypePair<float, signed long long>,
-                       TypePair<float, unsigned long long>,
-                       TypePair<double, signed long long>,
-                       TypePair<double, unsigned long long> > IntegerToFloatingPointTestTypes;
+typedef testing::Types<TypePair<float, int64_t>,
+                       TypePair<float, uint64_t>,
+                       TypePair<double, int64_t>,
+                       TypePair<double, uint64_t> > IntegerToFloatingPointTestTypes;
 INSTANTIATE_TYPED_TEST_CASE_P(IntegerToFloatingPointTestInstance,
                               IntegerToFloatingPointTest,
                               IntegerToFloatingPointTestTypes);
@@ -467,7 +468,8 @@ TEST(MSGPACK_STL, simple_buffer_non_const_cstring)
         for (unsigned int i = 0; i < kElements; i++)
             val1 += 'a' + rand() % 26;
         char* s = new char[val1.size() + 1];
-        std::memcpy(s, val1.c_str(), val1.size() + 1);
+        std::copy(val1.begin(), val1.end(), s );
+        s[val1.size()] = '\0';
         msgpack11::MsgPack packed{s};
         delete [] s;
 
