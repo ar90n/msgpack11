@@ -165,18 +165,18 @@ public:
     const MsgPack & operator[](const std::string &key) const;
 
     // Serialize.
-    void dump(std::vector<uint8_t> &out) const;
-    std::vector<uint8_t> dump() const {
-        std::vector<uint8_t> out;
+    void dump(std::string &out) const;
+    std::string dump() const {
+        std::string out;
         dump(out);
         return out;
     }
 
     // Parse. If parse fails, return MsgPack() and assign an error message to err.
-    static MsgPack parse(const std::vector<uint8_t> & in, std::string & err);
-    static MsgPack parse(const uint8_t * in, size_t len, std::string & err) {
+    static MsgPack parse(const std::string & in, std::string & err);
+    static MsgPack parse(const char * in, size_t len, std::string & err) {
         if (in) {
-            return parse(std::vector<uint8_t>(in,in+len), err);
+            return parse(std::string(in,in+len), err);
         } else {
             err = "null input";
             return nullptr;
@@ -219,7 +219,7 @@ protected:
     virtual MsgPack::Type type() const = 0;
     virtual bool equals(const MsgPackValue * other) const = 0;
     virtual bool less(const MsgPackValue * other) const = 0;
-    virtual void dump(std::vector<uint8_t> &out) const = 0;
+    virtual void dump(std::string &out) const = 0;
     virtual double number_value() const;
     virtual float float32_value() const;
     virtual double float64_value() const;
