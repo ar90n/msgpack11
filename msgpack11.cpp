@@ -40,7 +40,7 @@ struct EndianConverter {
 };
 
 template< typename T >
-void dump_data(T value, std::vector<uint8_t> &out)
+void dump_data(T value, std::string &out)
 {
     EndianConverter<T> converter;
     converter.value.packed = value;
@@ -59,21 +59,21 @@ void dump_data(T value, std::vector<uint8_t> &out)
     }
 }
 
-static void dump(std::nullptr_t, std::vector<uint8_t> &out) {
+static void dump(std::nullptr_t, std::string &out) {
     out.push_back(0xc0);
 }
 
-static void dump(float value, std::vector<uint8_t> &out) {
+static void dump(float value, std::string &out) {
     out.push_back(0xca);
     dump_data(value, out);
 }
 
-static void dump(double value, std::vector<uint8_t> &out) {
+static void dump(double value, std::string &out) {
     out.push_back(0xcb);
     dump_data(value, out);
 }
 
-static void dump(int8_t value, std::vector<uint8_t> &out) {
+static void dump(int8_t value, std::string &out) {
     if( value < -32 )
     {
         out.push_back(0xd0);
@@ -81,22 +81,22 @@ static void dump(int8_t value, std::vector<uint8_t> &out) {
     out.push_back(value);
 }
 
-static void dump(int16_t value, std::vector<uint8_t> &out) {
+static void dump(int16_t value, std::string &out) {
     out.push_back(0xd1);
     dump_data(value, out);
 }
 
-static void dump(int32_t value, std::vector<uint8_t> &out) {
+static void dump(int32_t value, std::string &out) {
     out.push_back(0xd2);
     dump_data(value, out);
 }
 
-static void dump(int64_t value, std::vector<uint8_t> &out) {
+static void dump(int64_t value, std::string &out) {
     out.push_back(0xd3);
     dump_data(value, out);
 }
 
-static void dump(uint8_t value, std::vector<uint8_t> &out) {
+static void dump(uint8_t value, std::string &out) {
     if(128 <= value)
     {
         out.push_back(0xcc);
@@ -104,27 +104,27 @@ static void dump(uint8_t value, std::vector<uint8_t> &out) {
     out.push_back(value);
 }
 
-static void dump(uint16_t value, std::vector<uint8_t> &out) {
+static void dump(uint16_t value, std::string &out) {
     out.push_back(0xcd);
     dump_data(value, out);
 }
 
-static void dump(uint32_t value, std::vector<uint8_t> &out) {
+static void dump(uint32_t value, std::string &out) {
     out.push_back(0xce);
     dump_data(value, out);
 }
 
-static void dump(uint64_t value, std::vector<uint8_t> &out) {
+static void dump(uint64_t value, std::string &out) {
     out.push_back(0xcf);
     dump_data(value, out);
 }
 
-static void dump(bool value, std::vector<uint8_t> &out) {
+static void dump(bool value, std::string &out) {
     const uint8_t msgpack_value = (value) ? 0xc3 : 0xc2;
     out.push_back(msgpack_value);
 }
 
-static void dump(const std::string& value, std::vector<uint8_t> &out) {
+static void dump(const std::string& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 0x1f)
     {
@@ -159,7 +159,7 @@ static void dump(const std::string& value, std::vector<uint8_t> &out) {
     });
 }
 
-static void dump(const MsgPack::array& value, std::vector<uint8_t> &out) {
+static void dump(const MsgPack::array& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 15)
     {
@@ -188,7 +188,7 @@ static void dump(const MsgPack::array& value, std::vector<uint8_t> &out) {
     });
 }
 
-static void dump(const MsgPack::object& value, std::vector<uint8_t> &out) {
+static void dump(const MsgPack::object& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 15)
     {
@@ -218,7 +218,7 @@ static void dump(const MsgPack::object& value, std::vector<uint8_t> &out) {
     });
 }
 
-static void dump(const MsgPack::binary& value, std::vector<uint8_t> &out) {
+static void dump(const MsgPack::binary& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 0xff)
     {
@@ -248,7 +248,7 @@ static void dump(const MsgPack::binary& value, std::vector<uint8_t> &out) {
     });
 }
 
-static void dump(const MsgPack::extension& value, std::vector<uint8_t> &out) {
+static void dump(const MsgPack::extension& value, std::string &out) {
     const uint8_t type = std::get<0>( value );
     const MsgPack::binary& data = std::get<1>( value );
     const size_t len = data.size();
@@ -294,7 +294,7 @@ static void dump(const MsgPack::extension& value, std::vector<uint8_t> &out) {
 }
 }
 
-void MsgPack::dump(std::vector<uint8_t> &out) const {
+void MsgPack::dump(std::string &out) const {
     m_ptr->dump(out);
 }
 
@@ -324,7 +324,7 @@ protected:
     }
 
     const T m_value;
-    void dump(std::vector<uint8_t> &out) const override { msgpack11::dump(m_value, out); }
+    void dump(std::string &out) const override { msgpack11::dump(m_value, out); }
 };
 
 template <MsgPack::Type tag, typename T>
@@ -541,8 +541,8 @@ uint32_t MsgPack::uint32_value()                        const { return m_ptr->ui
 uint64_t MsgPack::uint64_value()                        const { return m_ptr->uint64_value(); }
 bool MsgPack::bool_value()                              const { return m_ptr->bool_value(); }
 const string & MsgPack::string_value()                  const { return m_ptr->string_value(); }
-const vector<MsgPack> & MsgPack::array_items()          const { return m_ptr->array_items(); }
-const vector<uint8_t> & MsgPack::binary_items()         const { return m_ptr->binary_items(); }
+const vector<MsgPack>& MsgPack::array_items()           const { return m_ptr->array_items(); }
+const MsgPack::binary& MsgPack::binary_items()          const { return m_ptr->binary_items(); }
 const MsgPack::extension& MsgPack::extension_items()    const { return m_ptr->extension_items(); }
 const map<MsgPack, MsgPack> & MsgPack::object_items()   const { return m_ptr->object_items(); }
 const MsgPack & MsgPack::operator[] (size_t i)          const { return (*m_ptr)[i]; }
@@ -605,7 +605,7 @@ struct MsgPackParser final {
 
     /* State
      */
-    const std::vector< uint8_t > &buffer;
+    const std::string &buffer;
     size_t i;
     string &err;
     bool failed;
@@ -842,7 +842,7 @@ const std::vector< std::tuple<uint8_t, uint8_t, std::function< MsgPack(MsgPackPa
 
 }//namespace {
 
-MsgPack MsgPack::parse(const std::vector<uint8_t> &in, string &err) {
+MsgPack MsgPack::parse(const std::string &in, string &err) {
     MsgPackParser parser { in, 0, err, false };
     MsgPack result = parser.parse_msgpack(0);
 

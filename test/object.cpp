@@ -15,27 +15,27 @@ TEST(MSGPACK_OBJECT, pack_unpack_object)
 
     msgpack11::MsgPack packed{v1};
 
-    std::vector<uint8_t> dumped{packed.dump()};
-    EXPECT_EQ(dumped[0], 0x83u);
-    EXPECT_EQ(dumped[1], 0xccu);
-    EXPECT_EQ(dumped[2], 0xffu);
-    EXPECT_EQ(dumped[3], 0xa4u);
-    EXPECT_EQ(dumped[4], 'a');
-    EXPECT_EQ(dumped[5], 'b');
-    EXPECT_EQ(dumped[6], 'c');
-    EXPECT_EQ(dumped[7], 'd');
-    EXPECT_EQ(dumped[8], 0xa1u);
-    EXPECT_EQ(dumped[9], 'a');
-    EXPECT_EQ(dumped[10], 0xd2u);
-    EXPECT_EQ(dumped[11], 0x00u);
-    EXPECT_EQ(dumped[12], 0x00u);
-    EXPECT_EQ(dumped[13], 0x00u);
-    EXPECT_EQ(dumped[14], 0x64u);
-    EXPECT_EQ(dumped[15], 0xa1u);
-    EXPECT_EQ(dumped[16], 'b');
-    EXPECT_EQ(dumped[17], 0xd1u);
-    EXPECT_EQ(dumped[18], 0x00u);
-    EXPECT_EQ(dumped[19], 0xc8u);
+    std::string dumped{packed.dump()};
+    EXPECT_EQ(static_cast<uint8_t>(dumped[0]), 0x83u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[1]), 0xccu);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[2]), 0xffu);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[3]), 0xa4u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[4]), 'a');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[5]), 'b');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[6]), 'c');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[7]), 'd');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[8]), 0xa1u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[9]), 'a');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[10]), 0xd2u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[11]), 0x00u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[12]), 0x00u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[13]), 0x00u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[14]), 0x64u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[15]), 0xa1u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[16]), 'b');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[17]), 0xd1u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[18]), 0x00u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[19]), 0xc8u);
 
     std::string err;
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };
