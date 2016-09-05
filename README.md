@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ar90n/msgpack11.svg?branch=master)](https://travis-ci.org/ar90n/msgpack11)
+
 What is msgpack11 ?
 ===============
 
@@ -22,7 +24,7 @@ Example
         { "key2", false },
         { "key3", MsgPack::array { 1, 2, 3 } },
     };
-    std::vector<uint8_t> msgpack_bytes = my_msgpack.dump();
+    std::string msgpack_bytes = my_msgpack.dump();
 
 Feature
 ===============
