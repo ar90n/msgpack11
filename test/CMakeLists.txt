@@ -12,6 +12,7 @@ LIST (APPEND check_PROGRAMS
      basic.cpp
      raw.cpp
      object.cpp
+     multi.cpp
 )
 
 SET (MSGPACK_TEST_LIB msgpack11)
