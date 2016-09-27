@@ -182,6 +182,18 @@ public:
             return nullptr;
         }
     }
+    // Parse multiple objects, concatenated or separated by whitespace
+    static std::vector<MsgPack> parse_multi(
+        const std::string & in,
+        std::string::size_type & parser_stop_pos,
+        std::string & err);
+
+    static inline std::vector<MsgPack> parse_multi(
+        const std::string & in,
+        std::string & err) {
+        std::string::size_type parser_stop_pos;
+        return parse_multi(in, parser_stop_pos, err);
+    }
 
     bool operator== (const MsgPack &rhs) const;
     bool operator<  (const MsgPack &rhs) const;

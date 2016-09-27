@@ -852,6 +852,21 @@ MsgPack MsgPack::parse(const std::string &in, string &err) {
     return result;
 }
 
+// Documented in msgpack.hpp
+vector<MsgPack> MsgPack::parse_multi(const string &in,
+                                     std::string::size_type &parser_stop_pos,
+                                     string &err) {
+    MsgPackParser parser { in, 0, err, false };
+    parser_stop_pos = 0;
+    vector<MsgPack> msgpack_vec;
+    while (parser.i != in.size() && !parser.failed) {
+        msgpack_vec.push_back(parser.parse_msgpack(0));
+        if (!parser.failed)
+            parser_stop_pos = parser.i;
+    }
+    return msgpack_vec;
+}
+
 /* * * * * * * * * * * * * * * * * * * *
  * Shape-checking
  */
