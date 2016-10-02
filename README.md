@@ -13,7 +13,7 @@ Installation
     git clone git@github.com:ar90n/msgpack11.git
     mkdir build
     cd build
-    cmake ../sdviz
+    cmake ../msgpack11
     make && make install
 
 Example
