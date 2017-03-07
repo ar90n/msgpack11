@@ -27,7 +27,6 @@ public:
     // Types
     enum Type {
         NUL,
-        BOOL,
         FLOAT32,
         FLOAT64,
         INT8,
@@ -38,6 +37,7 @@ public:
         UINT16,
         UINT32,
         UINT64,
+        BOOL,
         STRING,
         BINARY,
         ARRAY,

@@ -591,8 +591,13 @@ bool MsgPack::operator== (const MsgPack &other) const {
 }
 
 bool MsgPack::operator< (const MsgPack &other) const {
-    if (m_ptr->type() != other.m_ptr->type())
+    Type type = m_ptr->type();
+    Type other_type = other.m_ptr->type();
+    if ( ( type < FLOAT32 ) || ( UINT64 <  type )
+      || ( other_type < FLOAT32 ) || ( UINT64 <  other_type ) )
+    {
         return m_ptr->type() < other.m_ptr->type();
+    }
 
     return m_ptr->less(other.m_ptr.get());
 }
