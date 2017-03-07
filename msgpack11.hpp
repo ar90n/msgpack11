@@ -27,7 +27,6 @@ public:
     // Types
     enum Type {
         NUL,
-        BOOL,
         FLOAT32,
         FLOAT64,
         INT8,
@@ -38,6 +37,7 @@ public:
         UINT16,
         UINT32,
         UINT64,
+        BOOL,
         STRING,
         BINARY,
         ARRAY,
@@ -212,47 +212,6 @@ public:
 
 private:
     std::shared_ptr<MsgPackValue> m_ptr;
-};
-
-// Internal class hierarchy - MsgPackValue objects are not exposed to users of this API.
-class MsgPackValue {
-protected:
-    friend class MsgPack;
-    friend class MsgPackFloat;
-    friend class MsgPackDouble;
-    friend class MsgPackInt8;
-    friend class MsgPackInt16;
-    friend class MsgPackInt32;
-    friend class MsgPackInt64;
-    friend class MsgPackUint8;
-    friend class MsgPackUint16;
-    friend class MsgPackUint32;
-    friend class MsgPackUint64;
-    virtual MsgPack::Type type() const = 0;
-    virtual bool equals(const MsgPackValue * other) const = 0;
-    virtual bool less(const MsgPackValue * other) const = 0;
-    virtual void dump(std::string &out) const = 0;
-    virtual double number_value() const;
-    virtual float float32_value() const;
-    virtual double float64_value() const;
-    virtual int32_t int_value() const;
-    virtual int8_t int8_value() const;
-    virtual int16_t int16_value() const;
-    virtual int32_t int32_value() const;
-    virtual int64_t int64_value() const;
-    virtual uint8_t uint8_value() const;
-    virtual uint16_t uint16_value() const;
-    virtual uint32_t uint32_value() const;
-    virtual uint64_t uint64_value() const;
-    virtual bool bool_value() const;
-    virtual const std::string &string_value() const;
-    virtual const MsgPack::array &array_items() const;
-    virtual const MsgPack::binary &binary_items() const;
-    virtual const MsgPack &operator[](size_t i) const;
-    virtual const MsgPack::object &object_items() const;
-    virtual const MsgPack &operator[](const std::string &key) const;
-    virtual const MsgPack::extension &extension_items() const;
-    virtual ~MsgPackValue() {}
 };
 
 } // namespace msgpack11
