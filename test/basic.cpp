@@ -655,6 +655,15 @@ TEST(MSGPACK_OPERATOR, simple_operator_int64)
     OperatorTest2< int64_t, int64_t >::run();
     OperatorTest2< int64_t, float >::run();
     OperatorTest2< int64_t, double >::run();
+
+    msgpack11::MsgPack int64_max_value( std::numeric_limits<int64_t>::max() );
+    msgpack11::MsgPack int64_min_value( std::numeric_limits<int64_t>::lowest() );
+    msgpack11::MsgPack int64_max_value_ull( static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) );
+    msgpack11::MsgPack int64_max_value_p1_ull( static_cast<uint64_t>( static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + 1ULL ) );
+    EXPECT_TRUE(int64_max_value == int64_max_value_ull);
+    EXPECT_TRUE(int64_max_value < int64_max_value_p1_ull);
+    EXPECT_TRUE(int64_min_value < int64_max_value_ull);
+    EXPECT_TRUE(int64_min_value < int64_max_value_p1_ull);
 }
 
 TEST(MSGPACK_OPERATOR, simple_operator_float32)

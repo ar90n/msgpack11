@@ -22,6 +22,39 @@ using std::initializer_list;
 using std::move;
 
 /* * * * * * * * * * * * * * * * * * * *
+ * MasPackValue
+ */
+
+class MsgPackValue {
+public:
+    virtual bool equals(const MsgPackValue * other) const = 0;
+    virtual bool less(const MsgPackValue * other) const = 0;
+    virtual void dump(std::string &out) const = 0;
+    virtual MsgPack::Type type() const = 0;
+    virtual double number_value() const;
+    virtual float float32_value() const;
+    virtual double float64_value() const;
+    virtual int32_t int_value() const;
+    virtual int8_t int8_value() const;
+    virtual int16_t int16_value() const;
+    virtual int32_t int32_value() const;
+    virtual int64_t int64_value() const;
+    virtual uint8_t uint8_value() const;
+    virtual uint16_t uint16_value() const;
+    virtual uint32_t uint32_value() const;
+    virtual uint64_t uint64_value() const;
+    virtual bool bool_value() const;
+    virtual const std::string &string_value() const;
+    virtual const MsgPack::array &array_items() const;
+    virtual const MsgPack::binary &binary_items() const;
+    virtual const MsgPack &operator[](size_t i) const;
+    virtual const MsgPack::object &object_items() const;
+    virtual const MsgPack &operator[](const std::string &key) const;
+    virtual const MsgPack::extension &extension_items() const;
+    virtual ~MsgPackValue() {}
+};
+
+/* * * * * * * * * * * * * * * * * * * *
  * Serialization
  */
 
@@ -318,15 +351,41 @@ protected:
 
     // Comparisons
     bool equals(const MsgPackValue * other) const override {
-        return m_value == static_cast<const Value<tag, T> *>(other)->m_value;
+        bool const is_same_type = tag == other->type();
+        bool const is_same_value = m_value == static_cast<const Value<tag, T> *>(other)->m_value;
+        return is_same_type && is_same_value;
     }
     bool less(const MsgPackValue * other) const override {
-        return m_value < static_cast<const Value<tag, T> *>(other)->m_value;
+        bool const is_same_type = tag == other->type();
+        bool const is_less_type = tag < other->type();
+        bool const is_less_value = m_value < static_cast<const Value<tag, T> *>(other)->m_value;
+        return is_less_type || (is_same_type && is_less_value);
     }
 
     const T m_value;
     void dump(std::string &out) const override { msgpack11::dump(m_value, out); }
 };
+
+bool equal_uint64_int64( uint64_t uint64_value, int64_t int64_value )
+{
+    bool const is_positive = 0 <= int64_value;
+    bool const is_leq_int64_max = uint64_value <= std::numeric_limits<int64_t>::max();
+    return is_positive && is_leq_int64_max && ( uint64_value == static_cast<uint64_t>(int64_value));
+}
+
+bool less_uint64_int64( uint64_t uint64_value, int64_t int64_value )
+{
+    bool const is_positive = 0 <= int64_value;
+    bool const is_leq_int64_max = uint64_value <= std::numeric_limits<int64_t>::max();
+    return is_positive && is_leq_int64_max && ( uint64_value < static_cast<uint64_t>(int64_value));
+}
+
+bool less_int64_uint64( int64_t int64_value, uint64_t uint64_value )
+{
+    bool const is_negative = int64_value < 0;
+    bool const is_gt_int64_max = std::numeric_limits<int64_t>::max() < uint64_value;
+    return is_negative || is_gt_int64_max || ( static_cast<uint64_t>(int64_value) < uint64_value );
+}
 
 template <MsgPack::Type tag, typename T>
 class NumberValue : public Value<tag, T>  {
@@ -335,6 +394,52 @@ protected:
     // Constructors
     explicit NumberValue(const T &value) : Value<tag, T>(value) {}
     explicit NumberValue(T &&value)      : Value<tag, T>(move(value)) {}
+
+    bool equals(const MsgPackValue * other) const override {
+        switch( other->type() )
+        {
+            case MsgPack::FLOAT32 : // fall through
+            case MsgPack::FLOAT64 : // fall through
+            case MsgPack::UINT8   : // fall through
+            case MsgPack::UINT16  : // fall through
+            case MsgPack::UINT32  : // fall through
+            case MsgPack::UINT64  : // fall through
+            case MsgPack::INT8    : // fall through
+            case MsgPack::INT16   : // fall through
+            case MsgPack::INT32   : // fall through
+            case MsgPack::INT64   : // fall through
+            {
+                return float64_value() == other->float64_value();
+            } break;
+            default               :
+            {
+                return Value<tag,T>::equals( other );
+            } break;
+        }
+    }
+
+    bool less(const MsgPackValue * other) const override {
+        switch( other->type() )
+        {
+            case MsgPack::FLOAT32 : // fall through
+            case MsgPack::FLOAT64 : // fall through
+            case MsgPack::UINT8   : // fall through
+            case MsgPack::UINT16  : // fall through
+            case MsgPack::UINT32  : // fall through
+            case MsgPack::UINT64  : // fall through
+            case MsgPack::INT8    : // fall through
+            case MsgPack::INT16   : // fall through
+            case MsgPack::INT32   : // fall through
+            case MsgPack::INT64   : // fall through
+            {
+                return float64_value() < other->float64_value();
+            } break;
+            default               :
+            {
+                return Value<tag,T>::less( other );
+            } break;
+        }
+    }
 
     double  number_value()  const override { return static_cast<double>( Value<tag,T>::m_value ); }
     float float32_value()   const override { return static_cast<float>( Value<tag,T>::m_value ); }
@@ -351,71 +456,123 @@ protected:
 };
 
 class MsgPackFloat final : public NumberValue<MsgPack::FLOAT32, float> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackFloat(float value) : NumberValue(value) {}
 };
 
 class MsgPackDouble final : public NumberValue<MsgPack::FLOAT64, double> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackDouble(double value) : NumberValue(value) {}
 };
 
 class MsgPackInt8 final : public NumberValue<MsgPack::INT8, int8_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackInt8(int8_t value) : NumberValue(value) {}
 };
 
 class MsgPackInt16 final : public NumberValue<MsgPack::INT16, int16_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackInt16(int16_t value) : NumberValue(value) {}
 };
 
 class MsgPackInt32 final : public NumberValue<MsgPack::INT32, int32_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackInt32(int32_t value) : NumberValue(value) {}
 };
 
 class MsgPackInt64 final : public NumberValue<MsgPack::INT64, int64_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
+    bool equals(const MsgPackValue * other) const override
+    {
+        switch( other->type() )
+        {
+            case MsgPack::INT64 :
+            {
+                return int64_value() == other->int64_value();
+            } break;
+            case MsgPack::UINT64 :
+            {
+                return equal_uint64_int64( other->uint64_value(), int64_value() );
+            } break;
+            default :
+            {
+                return NumberValue<MsgPack::INT64, int64_t>::equals( other );
+            }
+        }
+    }
+    bool less(const MsgPackValue * other)   const override
+    {
+        switch( other->type() )
+        {
+            case MsgPack::INT64 :
+            {
+                return int64_value() < other->int64_value();
+            } break;
+            case MsgPack::UINT64 :
+            {
+                return less_int64_uint64( int64_value(), other->uint64_value() );
+            } break;
+            default :
+            {
+                return NumberValue<MsgPack::INT64, int64_t>::less( other );
+            }
+        }
+    }
 public:
     explicit MsgPackInt64(int64_t value) : NumberValue(value) {}
 };
 
 class MsgPackUint8 final : public NumberValue<MsgPack::UINT8, uint8_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackUint8(uint8_t value) : NumberValue(value) {}
 };
 
 class MsgPackUint16 final : public NumberValue<MsgPack::UINT16, uint16_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackUint16(uint16_t value) : NumberValue(value) {}
 };
 
 class MsgPackUint32 final : public NumberValue<MsgPack::UINT32, uint32_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
 public:
     explicit MsgPackUint32(uint32_t value) : NumberValue(value) {}
 };
 
 class MsgPackUint64 final : public NumberValue<MsgPack::UINT64, uint64_t> {
-    bool equals(const MsgPackValue * other) const override { return m_value == other->float64_value(); }
-    bool less(const MsgPackValue * other)   const override { return m_value <  other->float64_value(); }
+    bool equals(const MsgPackValue * other) const override
+    {
+        switch( other->type() )
+        {
+            case MsgPack::INT64 :
+            {
+                return equal_uint64_int64( uint64_value(), other->int64_value() );
+            } break;
+            case MsgPack::UINT64 :
+            {
+                return uint64_value() == other->uint64_value();
+            } break;
+            default :
+            {
+                return NumberValue<MsgPack::UINT64, uint64_t>::equals( other );
+            }
+        }
+    }
+    bool less(const MsgPackValue * other)   const override
+    {
+        switch( other->type() )
+        {
+            case MsgPack::INT64 :
+            {
+                return less_uint64_int64( uint64_value(), other->uint64_value() );
+            } break;
+            case MsgPack::UINT64 :
+            {
+                return uint64_value() < other->uint64_value();
+            } break;
+            default :
+            {
+                return NumberValue<MsgPack::UINT64, uint64_t>::less( other );
+            }
+        }
+    }
 public:
     explicit MsgPackUint64(uint64_t value) : NumberValue(value) {}
 };
@@ -584,21 +741,10 @@ const MsgPack & MsgPackArray::operator[] (size_t i) const {
  */
 
 bool MsgPack::operator== (const MsgPack &other) const {
-    if (m_ptr->type() != other.m_ptr->type())
-        return false;
-
     return m_ptr->equals(other.m_ptr.get());
 }
 
 bool MsgPack::operator< (const MsgPack &other) const {
-    Type type = m_ptr->type();
-    Type other_type = other.m_ptr->type();
-    if ( ( type < FLOAT32 ) || ( UINT64 <  type )
-      || ( other_type < FLOAT32 ) || ( UINT64 <  other_type ) )
-    {
-        return m_ptr->type() < other.m_ptr->type();
-    }
-
     return m_ptr->less(other.m_ptr.get());
 }
 
