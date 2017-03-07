@@ -482,3 +482,237 @@ TEST(MSGPACK_STL, simple_buffer_non_const_cstring)
         EXPECT_EQ(val1, val2);
     }
 }
+
+template< typename T, typename std::enable_if< std::is_integral< T >::value, std::nullptr_t >::type = nullptr >
+T inc( T value )
+{
+    return value + static_cast<T>(1);
+}
+
+template< typename T, typename std::enable_if< std::is_integral< T >::value, std::nullptr_t >::type = nullptr >
+T dec( T value )
+{
+    return value - static_cast<T>(1);
+}
+
+template< typename T, typename std::enable_if< std::is_floating_point< T >::value, std::nullptr_t >::type = nullptr >
+T inc( T value )
+{
+    return std::nextafter( value, std::numeric_limits< T >::max() );
+}
+
+template< typename T, typename std::enable_if< std::is_floating_point< T >::value, std::nullptr_t >::type = nullptr >
+T dec( T value )
+{
+    return std::nextafter( value, std::numeric_limits< T >::lowest() );
+}
+
+template< typename T >
+struct OperatorTest1
+{
+    static void run()
+    {
+        msgpack11::MsgPack min_value( std::numeric_limits< T >::lowest() );
+        msgpack11::MsgPack max_value( std::numeric_limits< T >::max() );
+        msgpack11::MsgPack min_value_inc( inc( std::numeric_limits< T >::lowest() ) );
+        msgpack11::MsgPack max_value_dec( dec( std::numeric_limits< T >::max() ) );
+        EXPECT_TRUE(min_value == min_value);
+        EXPECT_FALSE(min_value == min_value_inc);
+        EXPECT_TRUE(min_value < min_value_inc);
+        EXPECT_TRUE(max_value == max_value);
+        EXPECT_FALSE(max_value == max_value_dec);
+        EXPECT_FALSE(max_value < max_value_dec);
+        EXPECT_TRUE(min_value < max_value);
+    }
+};
+
+template< typename T, typename U >
+struct OperatorTest2
+{
+    static void run()
+    {
+        msgpack11::MsgPack min_value( std::numeric_limits< T >::lowest() );
+        msgpack11::MsgPack max_value( std::numeric_limits< U >::max() );
+        EXPECT_FALSE(min_value == max_value);
+        EXPECT_TRUE(min_value < max_value);
+    }
+};
+
+TEST(MSGPACK_OPERATOR, simple_operator_uint8)
+{
+    OperatorTest1< uint8_t >::run();
+    OperatorTest2< uint8_t, uint8_t >::run();
+    OperatorTest2< uint8_t, uint16_t >::run();
+    OperatorTest2< uint8_t, uint32_t >::run();
+    OperatorTest2< uint8_t, uint64_t >::run();
+    OperatorTest2< uint8_t, int8_t >::run();
+    OperatorTest2< uint8_t, int16_t >::run();
+    OperatorTest2< uint8_t, int32_t >::run();
+    OperatorTest2< uint8_t, int64_t >::run();
+    OperatorTest2< uint8_t, float >::run();
+    OperatorTest2< uint8_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_uint16)
+{
+    OperatorTest1< uint16_t >::run();
+    OperatorTest2< uint16_t, uint16_t >::run();
+    OperatorTest2< uint16_t, uint32_t >::run();
+    OperatorTest2< uint16_t, uint64_t >::run();
+    OperatorTest2< uint16_t, int8_t >::run();
+    OperatorTest2< uint16_t, int16_t >::run();
+    OperatorTest2< uint16_t, int32_t >::run();
+    OperatorTest2< uint16_t, int64_t >::run();
+    OperatorTest2< uint16_t, float >::run();
+    OperatorTest2< uint16_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_uint32)
+{
+    OperatorTest1< uint32_t >::run();
+    OperatorTest2< uint32_t, uint8_t >::run();
+    OperatorTest2< uint32_t, uint16_t >::run();
+    OperatorTest2< uint32_t, uint32_t >::run();
+    OperatorTest2< uint32_t, uint64_t >::run();
+    OperatorTest2< uint32_t, int8_t >::run();
+    OperatorTest2< uint32_t, int16_t >::run();
+    OperatorTest2< uint32_t, int32_t >::run();
+    OperatorTest2< uint32_t, int64_t >::run();
+    OperatorTest2< uint32_t, float >::run();
+    OperatorTest2< uint32_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_uint64)
+{
+    OperatorTest1< uint64_t >::run();
+    OperatorTest2< uint64_t, uint8_t >::run();
+    OperatorTest2< uint64_t, uint16_t >::run();
+    OperatorTest2< uint64_t, uint32_t >::run();
+    OperatorTest2< uint64_t, uint64_t >::run();
+    OperatorTest2< uint64_t, int8_t >::run();
+    OperatorTest2< uint64_t, int16_t >::run();
+    OperatorTest2< uint64_t, int32_t >::run();
+    OperatorTest2< uint64_t, int64_t >::run();
+    OperatorTest2< uint64_t, float >::run();
+    OperatorTest2< uint64_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_int8)
+{
+    OperatorTest1< int8_t >::run();
+    OperatorTest2< int8_t, uint8_t >::run();
+    OperatorTest2< int8_t, uint16_t >::run();
+    OperatorTest2< int8_t, uint32_t >::run();
+    OperatorTest2< int8_t, uint64_t >::run();
+    OperatorTest2< int8_t, int8_t >::run();
+    OperatorTest2< int8_t, int16_t >::run();
+    OperatorTest2< int8_t, int32_t >::run();
+    OperatorTest2< int8_t, int64_t >::run();
+    OperatorTest2< int8_t, float >::run();
+    OperatorTest2< int8_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_int16)
+{
+    OperatorTest1< int16_t >::run();
+    OperatorTest2< int16_t, uint8_t >::run();
+    OperatorTest2< int16_t, uint16_t >::run();
+    OperatorTest2< int16_t, uint32_t >::run();
+    OperatorTest2< int16_t, uint64_t >::run();
+    OperatorTest2< int16_t, int8_t >::run();
+    OperatorTest2< int16_t, int16_t >::run();
+    OperatorTest2< int16_t, int32_t >::run();
+    OperatorTest2< int16_t, int64_t >::run();
+    OperatorTest2< int16_t, float >::run();
+    OperatorTest2< int16_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_int32)
+{
+    OperatorTest1< int32_t >::run();
+    OperatorTest2< int32_t, uint8_t >::run();
+    OperatorTest2< int32_t, uint16_t >::run();
+    OperatorTest2< int32_t, uint32_t >::run();
+    OperatorTest2< int32_t, uint64_t >::run();
+    OperatorTest2< int32_t, int8_t >::run();
+    OperatorTest2< int32_t, int16_t >::run();
+    OperatorTest2< int32_t, int32_t >::run();
+    OperatorTest2< int32_t, int64_t >::run();
+    OperatorTest2< int32_t, float >::run();
+    OperatorTest2< int32_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_int64)
+{
+    OperatorTest1< int64_t >::run();
+    OperatorTest2< int64_t, uint8_t >::run();
+    OperatorTest2< int64_t, uint16_t >::run();
+    OperatorTest2< int64_t, uint32_t >::run();
+    OperatorTest2< int64_t, uint64_t >::run();
+    OperatorTest2< int64_t, int8_t >::run();
+    OperatorTest2< int64_t, int16_t >::run();
+    OperatorTest2< int64_t, int32_t >::run();
+    OperatorTest2< int64_t, int64_t >::run();
+    OperatorTest2< int64_t, float >::run();
+    OperatorTest2< int64_t, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_float32)
+{
+    OperatorTest1< float >::run();
+    OperatorTest2< float, uint8_t >::run();
+    OperatorTest2< float, uint16_t >::run();
+    OperatorTest2< float, uint32_t >::run();
+    OperatorTest2< float, uint64_t >::run();
+    OperatorTest2< float, int8_t >::run();
+    OperatorTest2< float, int16_t >::run();
+    OperatorTest2< float, int32_t >::run();
+    OperatorTest2< float, int64_t >::run();
+    OperatorTest2< float, float >::run();
+    OperatorTest2< float, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_float64)
+{
+    OperatorTest1< double >::run();
+    OperatorTest2< double, uint8_t >::run();
+    OperatorTest2< double, uint16_t >::run();
+    OperatorTest2< double, uint32_t >::run();
+    OperatorTest2< double, uint64_t >::run();
+    OperatorTest2< double, int8_t >::run();
+    OperatorTest2< double, int16_t >::run();
+    OperatorTest2< double, int32_t >::run();
+    OperatorTest2< double, int64_t >::run();
+    OperatorTest2< double, float >::run();
+    OperatorTest2< double, double >::run();
+}
+
+TEST(MSGPACK_OPERATOR, simple_operator_others)
+{
+    msgpack11::MsgPack nul_value;
+    msgpack11::MsgPack number_value(1.0f);
+    msgpack11::MsgPack bool_value(true);
+    msgpack11::MsgPack string_value("string");
+    msgpack11::MsgPack binary_value(msgpack11::MsgPack::binary{0});
+    msgpack11::MsgPack array_value(msgpack11::MsgPack::array{ nul_value });
+    msgpack11::MsgPack object_value(msgpack11::MsgPack::object{{0,1}});
+    msgpack11::MsgPack extension_value(msgpack11::MsgPack::extension{0,msgpack11::MsgPack::binary{0}});
+
+    EXPECT_TRUE(nul_value == nul_value);
+    EXPECT_TRUE(number_value == number_value);
+    EXPECT_TRUE(bool_value == bool_value);
+    EXPECT_TRUE(string_value == string_value);
+    EXPECT_TRUE(binary_value == binary_value);
+    EXPECT_TRUE(array_value == array_value);
+    EXPECT_TRUE(object_value == object_value);
+    EXPECT_TRUE(extension_value == extension_value);
+
+    EXPECT_TRUE(nul_value < number_value);
+    EXPECT_TRUE(number_value < bool_value);
+    EXPECT_TRUE(bool_value < string_value);
+    EXPECT_TRUE(string_value < binary_value);
+    EXPECT_TRUE(binary_value < array_value);
+    EXPECT_TRUE(array_value < object_value);
+    EXPECT_TRUE(object_value < extension_value);
+    EXPECT_FALSE(extension_value < nul_value);
+}
