@@ -352,14 +352,12 @@ protected:
     // Comparisons
     bool equals(const MsgPackValue * other) const override {
         bool const is_same_type = tag == other->type();
-        bool const is_same_value = m_value == static_cast<const Value<tag, T> *>(other)->m_value;
-        return is_same_type && is_same_value;
+        return is_same_type && (m_value == static_cast<const Value<tag, T> *>(other)->m_value);
     }
     bool less(const MsgPackValue * other) const override {
         bool const is_same_type = tag == other->type();
         bool const is_less_type = tag < other->type();
-        bool const is_less_value = m_value < static_cast<const Value<tag, T> *>(other)->m_value;
-        return is_less_type || (is_same_type && is_less_value);
+        return is_less_type || (is_same_type && (m_value < static_cast<const Value<tag, T> *>(other)->m_value));
     }
 
     const T m_value;
