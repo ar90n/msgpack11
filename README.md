@@ -9,12 +9,19 @@ The API of msgpack11 is designed to be similar with json11.
 
 Installation
 ===============
+* Using CMake
 
-    git clone git@github.com:ar90n/msgpack11.git
-    mkdir build
-    cd build
-    cmake ../msgpack11
-    make && make install
+        git clone git@github.com:ar90n/msgpack11.git
+        mkdir build
+        cd build
+        cmake ../msgpack11
+        make && make install
+
+* Using Buck
+
+        git clone git@github.com:ar90n/msgpack11.git
+        cd msgpack11
+        buck build :msgpack11
 
 Example
 ===============
