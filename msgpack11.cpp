@@ -21,6 +21,15 @@ using std::make_shared;
 using std::initializer_list;
 using std::move;
 
+/* Helper for representing null - just a do-nothing struct, plus comparison
+ * operators so the helpers in MsgPackValue work. We can't use nullptr_t because
+ * it may not be orderable.
+ */
+struct NullStruct {
+    bool operator==(NullStruct) const { return true; }
+    bool operator<(NullStruct) const { return false; }
+};
+
 /* * * * * * * * * * * * * * * * * * * *
  * MasPackValue
  */
@@ -93,7 +102,7 @@ void dump_data(T value, std::string &out)
     }
 }
 
-static void dump(std::nullptr_t, std::string &out) {
+static void dump(NullStruct, std::string &out) {
     out.push_back(0xc0);
 }
 
@@ -618,9 +627,9 @@ public:
     explicit MsgPackExtension(MsgPack::extension &&value)      : Value(move(value)) {}
 };
 
-class MsgPackNull final : public Value<MsgPack::NUL, std::nullptr_t> {
+class MsgPackNull final : public Value<MsgPack::NUL, NullStruct> {
 public:
-    MsgPackNull() : Value(nullptr) {}
+    MsgPackNull() : Value({}) {}
 };
 
 /* * * * * * * * * * * * * * * * * * * *
