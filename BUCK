@@ -20,6 +20,22 @@ cxx_library(
   ],
 )
 
+cxx_binary(
+  name = 'msgpack11-example',
+  srcs = [
+    './example.cpp'
+  ],
+  compiler_flags = [
+    '-std=c++11',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+  deps = [
+    ':msgpack11'
+  ],
+)
+
 cxx_test(
   name = 'msgpack11-test',
   srcs = [

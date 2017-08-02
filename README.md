@@ -31,7 +31,19 @@ Example
         { "key2", false },
         { "key3", MsgPack::array { 1, 2, 3 } },
     };
+
+    //access to elements
+    std::cout << my_msgpack["key1"].string_value();
+
+    //serialize
     std::string msgpack_bytes = my_msgpack.dump();
+
+    //deserialize
+    std::string err;
+    MsgPack des_msgpack = MsgPack::parse(msgpack_bytes, err);
+
+There are more specific examples in example.cpp.
+Please see it.
 
 Feature
 ===============
