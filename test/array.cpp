@@ -89,18 +89,11 @@ TEST(MSGPACK_ARRAY, pack_unpack_object_array)
     EXPECT_EQ(static_cast<uint8_t>(dumped[1]), 0x82u);
     EXPECT_EQ(static_cast<uint8_t>(dumped[2]), 0xa1u);
     EXPECT_EQ(static_cast<uint8_t>(dumped[3]), 'a');
-    EXPECT_EQ(static_cast<uint8_t>(dumped[4]), 0xd2u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[5]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[6]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[7]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[8]), 0x64u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[9]), 0xa1u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[10]), 'b');
-    EXPECT_EQ(static_cast<uint8_t>(dumped[11]), 0xd2u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[12]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[13]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[14]), 0x00u);
-    EXPECT_EQ(static_cast<uint8_t>(dumped[15]), 0xc8u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[4]), 0x64u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[5]), 0xa1u);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[6]), 'b');
+    EXPECT_EQ(static_cast<uint8_t>(dumped[7]), 0xccu);
+    EXPECT_EQ(static_cast<uint8_t>(dumped[8]), 0xc8u);
 
     std::string err;
     msgpack11::MsgPack parsed{ msgpack11::MsgPack::parse(dumped, err) };

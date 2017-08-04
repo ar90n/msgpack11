@@ -116,29 +116,6 @@ static void dump(double value, std::string &out) {
     dump_data(value, out);
 }
 
-static void dump(int8_t value, std::string &out) {
-    if( value < -32 )
-    {
-        out.push_back(0xd0);
-    }
-    out.push_back(value);
-}
-
-static void dump(int16_t value, std::string &out) {
-    out.push_back(0xd1);
-    dump_data(value, out);
-}
-
-static void dump(int32_t value, std::string &out) {
-    out.push_back(0xd2);
-    dump_data(value, out);
-}
-
-static void dump(int64_t value, std::string &out) {
-    out.push_back(0xd3);
-    dump_data(value, out);
-}
-
 static void dump(uint8_t value, std::string &out) {
     if(128 <= value)
     {
@@ -148,18 +125,96 @@ static void dump(uint8_t value, std::string &out) {
 }
 
 static void dump(uint16_t value, std::string &out) {
-    out.push_back(0xcd);
-    dump_data(value, out);
+    if( value < (1 << 8) )
+    {
+        dump(static_cast<uint8_t>(value), out );
+    }
+    else
+    {
+        out.push_back(0xcd);
+        dump_data(value, out);
+    }
 }
 
 static void dump(uint32_t value, std::string &out) {
-    out.push_back(0xce);
-    dump_data(value, out);
+    if( value < (1 << 16) )
+    {
+        dump(static_cast<uint16_t>(value), out );
+    }
+    else
+    {
+        out.push_back(0xce);
+        dump_data(value, out);
+    }
 }
 
 static void dump(uint64_t value, std::string &out) {
-    out.push_back(0xcf);
-    dump_data(value, out);
+    if( value < (1ULL << 32) )
+    {
+        dump(static_cast<uint32_t>(value), out );
+    }
+    else
+    {
+        out.push_back(0xcf);
+        dump_data(value, out);
+    }
+}
+
+
+static void dump(int8_t value, std::string &out) {
+    if( value < -32 )
+    {
+        out.push_back(0xd0);
+    }
+    out.push_back(value);
+}
+
+static void dump(int16_t value, std::string &out) {
+    if( value < -(1 << 7) )
+    {
+        out.push_back(0xd1);
+        dump_data(value, out);
+    }
+    else if( value <= 0 )
+    {
+        dump(static_cast<int8_t>(value), out );
+    }
+    else
+    {
+        dump(static_cast<uint16_t>(value), out );
+    }
+}
+
+static void dump(int32_t value, std::string &out) {
+    if( value < -(1 << 15) )
+    {
+        out.push_back(0xd2);
+        dump_data(value, out);
+    }
+    else if( value <= 0 )
+    {
+        dump(static_cast<int16_t>(value), out );
+    }
+    else
+    {
+        dump(static_cast<uint32_t>(value), out );
+    }
+}
+
+static void dump(int64_t value, std::string &out) {
+    if( value < -(1LL << 31) )
+    {
+        out.push_back(0xd3);
+        dump_data(value, out);
+    }
+    else if( value <= 0 )
+    {
+        dump(static_cast<int32_t>(value), out );
+    }
+    else
+    {
+        dump(static_cast<uint64_t>(value), out );
+    }
 }
 
 static void dump(bool value, std::string &out) {
