@@ -56,8 +56,8 @@ Derived from [schemaless-benchmarks](https://github.com/ludocode/schemaless-benc
 | msgpack11-pack(v0.0.8) | 667222 | 66.78 | 357.73 | 2926.13 | 27854.59 | 322283.48 | 0f3a2f59 |
 | msgpack11-unpack(v0.0.8) | 664792 | 62.21 | 365.62 | 2978.63 | 27399.32 | 313430.80 | f36ed757 |
 
-CPU : 2.6 GHz Intel Core i7
-Memory : 16 GB 2133 MHz LPDDR3
+CPU : 2.6 GHz Intel Core i7  
+Memory : 16 GB 2133 MHz LPDDR3  
 Git revision : bfbb3d67c4a7f56c28c982f4185d0b54e9326f58
 
 Feature
