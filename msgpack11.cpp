@@ -863,17 +863,17 @@ public:
         return first_byte;
     }
 
-    MsgPack parse_invalid(uint8_t) {
+    MsgPack parse_invalid(uint8_t, int) {
         m_err = "invalid first byte.";
         m_failed = true;
         return MsgPack();
     }
 
-    MsgPack parse_nil(uint8_t) {
+    MsgPack parse_nil(uint8_t, int) {
         return MsgPack();
     }
 
-    MsgPack parse_bool(uint8_t first_byte) {
+    MsgPack parse_bool(uint8_t first_byte, int) {
         return MsgPack(first_byte == 0xc3);
     }
 
@@ -895,7 +895,7 @@ public:
     }
 
     template< typename T >
-    MsgPack parse_arith(uint8_t) {
+    MsgPack parse_arith(uint8_t, int) {
         return MsgPack(parse_arith_impl<T>());
     }
 
@@ -905,42 +905,42 @@ public:
     }
 
     template< typename T >
-    MsgPack parse_string(uint8_t) {
+    MsgPack parse_string(uint8_t, int) {
         T const bytes = parse_arith_impl<T>();
         return MsgPack(parse_string_impl(static_cast<uint32_t>(bytes)));
     }
 
-    MsgPack::array parse_array_impl(uint32_t bytes) {
+    MsgPack::array parse_array_impl(uint32_t bytes, int depth) {
         MsgPack::array res;
         res.reserve(bytes);
 
         for(uint32_t i = 0; i < bytes; ++i) {
-            res.push_back(parse_msgpack(0));
+            res.push_back(parse_msgpack(depth));
         }
         return res;
     }
 
     template< typename T >
-    MsgPack parse_array(uint8_t) {
+    MsgPack parse_array(uint8_t, int depth) {
         T const bytes = parse_arith_impl<T>();
-        return MsgPack(parse_array_impl(static_cast<uint32_t>(bytes)));
+        return MsgPack(parse_array_impl(static_cast<uint32_t>(bytes), depth));
     }
 
-    MsgPack::object parse_object_impl(uint32_t bytes) {
+    MsgPack::object parse_object_impl(uint32_t bytes, int depth) {
         MsgPack::object res;
 
         for(uint32_t i = 0; i < bytes; ++i) {
-            MsgPack key = parse_msgpack(0);
-            MsgPack value = parse_msgpack(0);
+            MsgPack key = parse_msgpack(depth);
+            MsgPack value = parse_msgpack(depth);
             res.insert(std::make_pair(std::move(key), std::move(value)));
         }
         return res;
     }
 
     template< typename T >
-    MsgPack parse_object(uint8_t first_byte) {
+    MsgPack parse_object(uint8_t first_byte, int depth) {
         T const bytes = parse_arith_impl<T>();
-        return MsgPack(parse_object_impl(static_cast<uint32_t>(bytes)));
+        return MsgPack(parse_object_impl(static_cast<uint32_t>(bytes), depth));
     }
 
     MsgPack::binary parse_binary_impl(uint32_t bytes) {
@@ -949,44 +949,44 @@ public:
     }
 
     template< typename T >
-    MsgPack parse_binary(uint8_t) {
+    MsgPack parse_binary(uint8_t, int) {
         T const bytes = parse_arith_impl<T>();
         return MsgPack(parse_binary_impl(static_cast<uint32_t>(bytes)));
     }
 
     template< typename T >
-    MsgPack parse_extension(uint8_t) {
+    MsgPack parse_extension(uint8_t, int) {
         const T bytes = parse_arith_impl<T>();
         const uint8_t type = parse_arith_impl<uint8_t>();
         const MsgPack::binary data =  parse_binary_impl(static_cast<uint32_t>(bytes));
         return MsgPack(std::make_tuple(type, std::move(data)));
     }
 
-    MsgPack parse_pos_fixint(uint8_t first_byte) {
+    MsgPack parse_pos_fixint(uint8_t first_byte, int) {
         return MsgPack( first_byte );
     }
 
-    MsgPack parse_fixobject(uint8_t first_byte) {
+    MsgPack parse_fixobject(uint8_t first_byte, int depth) {
         uint32_t const bytes = first_byte & 0x0f;
-        return MsgPack(parse_object_impl(bytes));
+        return MsgPack(parse_object_impl(bytes, depth));
     }
 
-    MsgPack parse_fixarray(uint8_t first_byte) {
+    MsgPack parse_fixarray(uint8_t first_byte, int depth) {
         uint32_t const bytes = first_byte & 0x0f;
-        return MsgPack(parse_array_impl(bytes));
+        return MsgPack(parse_array_impl(bytes, depth));
     }
 
-    MsgPack parse_fixstring(uint8_t first_byte) {
+    MsgPack parse_fixstring(uint8_t first_byte, int) {
         uint32_t const bytes = first_byte & 0x1f;
         return MsgPack(parse_string_impl(bytes));
     }
 
-    MsgPack parse_neg_fixint(uint8_t first_byte) {
+    MsgPack parse_neg_fixint(uint8_t first_byte, int) {
         return MsgPack(*reinterpret_cast<int8_t*>(&first_byte));
     }
 
     template<uint32_t BYTES>
-    MsgPack parse_fixext(uint8_t) {
+    MsgPack parse_fixext(uint8_t, int) {
         const uint8_t type = parse_arith_impl<uint8_t>();
         const MsgPack::binary data = parse_binary_impl(BYTES);
         return MsgPack(std::make_tuple(type, std::move(data)));
@@ -997,8 +997,8 @@ public:
      * Parse a JSON object.
      */
     MsgPack parse_msgpack(int depth) {
-        static const std::array< MsgPack(MsgPackParser::*)(uint8_t), 256 > parsers = [](){
-            using parser_template_element_type = std::tuple<uint8_t, MsgPack(MsgPackParser::*)(uint8_t)>;
+        static const std::array< MsgPack(MsgPackParser::*)(uint8_t, int), 256 > parsers = [](){
+            using parser_template_element_type = std::tuple<uint8_t, MsgPack(MsgPackParser::*)(uint8_t,int)>;
             std::array< parser_template_element_type, 36 > const parser_template{
                 parser_template_element_type{ 0x7fu, &MsgPackParser::parse_pos_fixint},
                 parser_template_element_type{ 0x8fu, &MsgPackParser::parse_fixobject},
@@ -1038,7 +1038,7 @@ public:
                 parser_template_element_type{ 0xffu, &MsgPackParser::parse_neg_fixint}
             };
 
-            std::array< MsgPack(MsgPackParser::*)(uint8_t), 256 > parsers;
+            std::array< MsgPack(MsgPackParser::*)(uint8_t, int), 256 > parsers;
             int i = 0;
             std::for_each(std::begin(parser_template),
                          std::end(parser_template),
@@ -1064,7 +1064,7 @@ public:
         }
 
         uint8_t const first_byte = get_first_byte();
-        return (this->*parsers[first_byte])(first_byte);
+        return (this->*parsers[first_byte])(first_byte, depth + 1);
     }
 
 private:
