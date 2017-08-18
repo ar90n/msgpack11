@@ -18,6 +18,7 @@ cxx_library(
   ],
   compiler_flags = [
     '-std=c++11',
+    '-O2',
   ],
   visibility = [
     'PUBLIC',
@@ -31,6 +32,7 @@ cxx_binary(
   ],
   compiler_flags = [
     '-std=c++11',
+    '-O2'
   ],
   visibility = [
     'PUBLIC',
@@ -51,6 +53,7 @@ cxx_test(
   ],
   compiler_flags = [
     '-std=c++11',
+    '-O2'
   ],
   visibility = [
     'PUBLIC',
@@ -98,7 +101,8 @@ cxx_library(
     './benchmark/src/common/generator.c',
   ],
   compiler_flags = [
-    '-DBENCHMARK_ROOT_PATH=' + path.join(path_to_root,'benchmark')
+    '-DBENCHMARK_ROOT_PATH=' + path.join(path_to_root,'benchmark'),
+    '-O2'
   ],
   exported_headers = subdir_glob([
     ('benchmark/src/common', '*.h')
@@ -112,7 +116,8 @@ cxx_binary(
     './benchmark/src/msgpack-c-unpack.cpp'
   ],
   compiler_flags = [
-    '-std=c++11'
+    '-std=c++11',
+    '-O2'
   ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
@@ -128,7 +133,8 @@ cxx_binary(
     './benchmark/src/msgpack-c-pack.cpp'
   ],
   compiler_flags = [
-    '-std=c++11'
+    '-std=c++11',
+    '-O2'
   ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
@@ -144,7 +150,8 @@ cxx_binary(
     './benchmark/src/msgpack11-unpack.cpp'
   ],
   compiler_flags = [
-    '-std=c++11'
+    '-std=c++11',
+    '-O2',
   ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
@@ -160,7 +167,8 @@ cxx_binary(
     './benchmark/src/msgpack11-pack.cpp'
   ],
   compiler_flags = [
-    '-std=c++11'
+    '-std=c++11',
+    '-O2'
   ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
@@ -175,6 +183,9 @@ cxx_binary(
   srcs = [
     './benchmark/src/hash/hash-data.c'
   ],
+  compiler_flags = [
+    '-O2'
+  ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
   deps = [
@@ -186,6 +197,9 @@ cxx_binary(
   name = 'hash-object',
   srcs = [
     './benchmark/src/hash/hash-object.c'
+  ],
+  compiler_flags = [
+    '-O2'
   ],
   visibility = [ 'PUBLIC' ],
   link_style = 'static',
