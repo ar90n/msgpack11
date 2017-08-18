@@ -870,26 +870,10 @@ public:
         return MsgPack(first_byte == 0xc3);
     }
 
-    template< int N >
-    void read_bytes(uint8_t* bytes)
-    {
-        static int const offsets[] = {(N-1), 0};
-        static int const directions[] = {-1, 1};
-
-        uint8_t* dst_ptr = bytes + offsets[static_cast<int>(is_big_endian)];
-        int const dir = directions[static_cast<int>(is_big_endian)];
-        for(int i = 0; i < N; ++i)
-        {
-            *dst_ptr = *m_ptr_cur;
-            dst_ptr += dir;
-            ++m_ptr_cur;
-        }
-    }
-
     template< typename T >
     MsgPack parse_arith(uint8_t, int) {
         T tmp;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&tmp));
+        read_bytes(reinterpret_cast<uint8_t*>(&tmp), sizeof(T));
         return MsgPack(tmp);
     }
 
@@ -901,7 +885,7 @@ public:
     template< typename T >
     MsgPack parse_string(uint8_t, int) {
         T bytes;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        read_bytes(reinterpret_cast<uint8_t*>(&bytes), sizeof(T));
         return MsgPack(parse_string_impl(static_cast<uint32_t>(bytes)));
     }
 
@@ -918,7 +902,7 @@ public:
     template< typename T >
     MsgPack parse_array(uint8_t, int depth) {
         T bytes;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        read_bytes(reinterpret_cast<uint8_t*>(&bytes), sizeof(T));
         return MsgPack(parse_array_impl(static_cast<uint32_t>(bytes), depth));
     }
 
@@ -936,7 +920,7 @@ public:
     template< typename T >
     MsgPack parse_object(uint8_t, int depth) {
         T bytes;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        read_bytes(reinterpret_cast<uint8_t*>(&bytes), sizeof(T));
         return MsgPack(parse_object_impl(static_cast<uint32_t>(bytes), depth));
     }
 
@@ -948,16 +932,16 @@ public:
     template< typename T >
     MsgPack parse_binary(uint8_t, int) {
         T bytes;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        read_bytes(reinterpret_cast<uint8_t*>(&bytes), sizeof(T));
         return MsgPack(parse_binary_impl(static_cast<uint32_t>(bytes)));
     }
 
     template< typename T >
     MsgPack parse_extension(uint8_t, int) {
         T bytes;
-        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        read_bytes(reinterpret_cast<uint8_t*>(&bytes), sizeof(T));
         uint8_t type;
-        read_bytes<1>(&type);
+        read_bytes(&type, 1);
         const MsgPack::binary data =  parse_binary_impl(static_cast<uint32_t>(bytes));
         return MsgPack(std::make_tuple(type, std::move(data)));
     }
@@ -985,10 +969,10 @@ public:
         return MsgPack(*reinterpret_cast<int8_t*>(&first_byte));
     }
 
-    template<uint32_t BYTES>
-    MsgPack parse_fixext(uint8_t, int) {
+    MsgPack parse_fixext(uint8_t first_byte, int) {
         uint8_t type;
-        read_bytes<1>(&type);
+        read_bytes(&type, 1);
+        uint32_t const BYTES = 1 << (first_byte - 0xd4u);
         const MsgPack::binary data = parse_binary_impl(BYTES);
         return MsgPack(std::make_tuple(type, std::move(data)));
     }
@@ -1024,11 +1008,7 @@ public:
                 parser_template_element_type{ 0xd1u, &MsgPackParser::parse_arith<int16_t>},
                 parser_template_element_type{ 0xd2u, &MsgPackParser::parse_arith<int32_t>},
                 parser_template_element_type{ 0xd3u, &MsgPackParser::parse_arith<int64_t>},
-                parser_template_element_type{ 0xd4u, &MsgPackParser::parse_fixext<1u>},
-                parser_template_element_type{ 0xd5u, &MsgPackParser::parse_fixext<2u>},
-                parser_template_element_type{ 0xd6u, &MsgPackParser::parse_fixext<4u>},
-                parser_template_element_type{ 0xd7u, &MsgPackParser::parse_fixext<8u>},
-                parser_template_element_type{ 0xd8u, &MsgPackParser::parse_fixext<16u>},
+                parser_template_element_type{ 0xd8u, &MsgPackParser::parse_fixext},
                 parser_template_element_type{ 0xd9u, &MsgPackParser::parse_string<uint8_t>},
                 parser_template_element_type{ 0xdau, &MsgPackParser::parse_string<uint16_t>},
                 parser_template_element_type{ 0xdbu, &MsgPackParser::parse_string<uint32_t>},
@@ -1078,6 +1058,21 @@ private:
     const char* m_ptr_cur;
     string &m_err;
     bool m_failed;
+
+    void read_bytes(uint8_t* bytes, int n)
+    {
+        int const offsets[] = {(n-1), 0};
+        int const directions[] = {-1, 1};
+
+        uint8_t* dst_ptr = bytes + offsets[static_cast<int>(is_big_endian)];
+        int const dir = directions[static_cast<int>(is_big_endian)];
+        for(int i = 0; i < n; ++i)
+        {
+            *dst_ptr = *m_ptr_cur;
+            dst_ptr += dir;
+            ++m_ptr_cur;
+        }
+    }
 };
 
 }//namespace {
