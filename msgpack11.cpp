@@ -984,7 +984,7 @@ public:
     MsgPack parse_msgpack(int depth) {
         static const std::array< MsgPack(MsgPackParser::*)(uint8_t, int), 256 > parsers = [](){
             using parser_template_element_type = std::tuple<uint8_t, MsgPack(MsgPackParser::*)(uint8_t,int)>;
-            std::array< parser_template_element_type, 36 > const parser_template{
+            std::array< parser_template_element_type, 36 > const parser_template{{
                 parser_template_element_type{ 0x7fu, &MsgPackParser::parse_pos_fixint},
                 parser_template_element_type{ 0x8fu, &MsgPackParser::parse_fixobject},
                 parser_template_element_type{ 0x9fu, &MsgPackParser::parse_fixarray},
@@ -1017,7 +1017,7 @@ public:
                 parser_template_element_type{ 0xdeu, &MsgPackParser::parse_object<uint16_t>},
                 parser_template_element_type{ 0xdfu, &MsgPackParser::parse_object<uint32_t>},
                 parser_template_element_type{ 0xffu, &MsgPackParser::parse_neg_fixint}
-            };
+            }};
 
             std::array< MsgPack(MsgPackParser::*)(uint8_t, int), 256 > parsers;
             int i = 0;
