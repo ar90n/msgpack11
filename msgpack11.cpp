@@ -856,13 +856,6 @@ public:
         return m_failed;
     }
 
-    uint8_t get_first_byte()
-    {
-        const uint8_t first_byte = *m_ptr_cur;
-        ++m_ptr_cur;
-        return first_byte;
-    }
-
     MsgPack parse_invalid(uint8_t, int) {
         m_err = "invalid first byte.";
         m_failed = true;
@@ -877,26 +870,27 @@ public:
         return MsgPack(first_byte == 0xc3);
     }
 
-    template< typename T >
-    T parse_arith_impl() {
-        EndianConverter<T> converter;
-        for( size_t j = 0; j < sizeof(T); ++j )
+    template< int N >
+    void read_bytes(uint8_t* bytes)
+    {
+        static int const offsets[] = {(N-1), 0};
+        static int const directions[] = {-1, 1};
+
+        uint8_t* dst_ptr = bytes + offsets[static_cast<int>(is_big_endian)];
+        int const dir = directions[static_cast<int>(is_big_endian)];
+        for(int i = 0; i < N; ++i)
         {
-            converter.value.bytes[j] = *m_ptr_cur;
+            *dst_ptr = *m_ptr_cur;
+            dst_ptr += dir;
             ++m_ptr_cur;
         }
-
-        if(!is_big_endian)
-        {
-            std::reverse(converter.value.bytes.begin(), converter.value.bytes.end());
-        }
-
-        return converter.value.packed;
     }
 
     template< typename T >
     MsgPack parse_arith(uint8_t, int) {
-        return MsgPack(parse_arith_impl<T>());
+        T tmp;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&tmp));
+        return MsgPack(tmp);
     }
 
     inline  std::string parse_string_impl(uint32_t bytes) {
@@ -906,7 +900,8 @@ public:
 
     template< typename T >
     MsgPack parse_string(uint8_t, int) {
-        T const bytes = parse_arith_impl<T>();
+        T bytes;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
         return MsgPack(parse_string_impl(static_cast<uint32_t>(bytes)));
     }
 
@@ -922,7 +917,8 @@ public:
 
     template< typename T >
     MsgPack parse_array(uint8_t, int depth) {
-        T const bytes = parse_arith_impl<T>();
+        T bytes;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
         return MsgPack(parse_array_impl(static_cast<uint32_t>(bytes), depth));
     }
 
@@ -939,7 +935,8 @@ public:
 
     template< typename T >
     MsgPack parse_object(uint8_t first_byte, int depth) {
-        T const bytes = parse_arith_impl<T>();
+        T bytes;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
         return MsgPack(parse_object_impl(static_cast<uint32_t>(bytes), depth));
     }
 
@@ -950,14 +947,17 @@ public:
 
     template< typename T >
     MsgPack parse_binary(uint8_t, int) {
-        T const bytes = parse_arith_impl<T>();
+        T bytes;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
         return MsgPack(parse_binary_impl(static_cast<uint32_t>(bytes)));
     }
 
     template< typename T >
     MsgPack parse_extension(uint8_t, int) {
-        const T bytes = parse_arith_impl<T>();
-        const uint8_t type = parse_arith_impl<uint8_t>();
+        T bytes;
+        read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
+        uint8_t type;
+        read_bytes<1>(&type);
         const MsgPack::binary data =  parse_binary_impl(static_cast<uint32_t>(bytes));
         return MsgPack(std::make_tuple(type, std::move(data)));
     }
@@ -987,7 +987,8 @@ public:
 
     template<uint32_t BYTES>
     MsgPack parse_fixext(uint8_t, int) {
-        const uint8_t type = parse_arith_impl<uint8_t>();
+        uint8_t type;
+        read_bytes<1>(&type);
         const MsgPack::binary data = parse_binary_impl(BYTES);
         return MsgPack(std::make_tuple(type, std::move(data)));
     }
@@ -1063,7 +1064,9 @@ public:
             return fail("end of buffer.");
         }
 
-        uint8_t const first_byte = get_first_byte();
+        uint8_t const first_byte = *m_ptr_cur;
+        ++m_ptr_cur;
+
         return (this->*parsers[first_byte])(first_byte, depth + 1);
     }
 
