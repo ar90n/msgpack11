@@ -18,6 +18,10 @@ cxx_library(
   ],
   compiler_flags = [
     '-std=c++11',
+    '-fno-rtti',
+    '-Wall',
+    '-Wextra',
+    '-Werror',
     '-O2',
   ],
   visibility = [

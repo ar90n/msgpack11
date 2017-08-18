@@ -846,9 +846,9 @@ public:
         return err_ret;
     }
 
-    int pos() const
+    size_t pos() const
     {
-        return std::distance(m_ptr_beg, m_ptr_cur);
+        return static_cast<size_t>(std::distance(m_ptr_beg, m_ptr_cur));
     }
 
     bool is_failed() const
@@ -934,7 +934,7 @@ public:
     }
 
     template< typename T >
-    MsgPack parse_object(uint8_t first_byte, int depth) {
+    MsgPack parse_object(uint8_t, int depth) {
         T bytes;
         read_bytes<sizeof(T)>(reinterpret_cast<uint8_t*>(&bytes));
         return MsgPack(parse_object_impl(static_cast<uint32_t>(bytes), depth));
