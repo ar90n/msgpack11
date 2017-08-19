@@ -8,5 +8,10 @@ build
 .buckd
 buck-out
 buckaroo
+buckaroo.lock.json
 BUCKAROO_DEPS
 .buckconfig.local
+
+#benchmark
+results.md
+results.csv
