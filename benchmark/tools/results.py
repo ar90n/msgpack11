@@ -32,8 +32,6 @@ def print_header():
     for s in ['Smallest', 'Small', 'Medium', 'Large', 'Largest']:
         header += ' time[ms] @ %s |' % s
         divider += '----|'
-    header += ' Hash |'
-    divider += '----|'
     print(header)
     print(divider)
 
@@ -52,8 +50,6 @@ def print_table(results):
         for i in range(1,6):
             timestr = rowtime_str(results[name]['time'][i], results[hash_name]['time'][i])
             row += ' %s |' % str(timestr)
-
-        row += ' %s |' % values['hash']
 
         print(row)
 
