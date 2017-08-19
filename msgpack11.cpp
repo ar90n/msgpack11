@@ -76,48 +76,40 @@ static const union {
 static const bool is_big_endian = endian_check_data.bytes[0] == 0x00;
 
 template< typename T >
-struct EndianConverter {
+void dump_data(T value, std::string &out)
+{
     union {
         T packed;
         std::array<uint8_t, sizeof(T)> bytes;
-    } value;
-};
+    } converter;
+    converter.packed = value;
 
-template< typename T >
-void dump_data(T value, std::string &out)
-{
-    EndianConverter<T> converter;
-    converter.value.packed = value;
-
-    auto f = [&](uint8_t byte) {
-        out.push_back(byte);
-    };
-
-    if(is_big_endian)
+    int const n = sizeof(T);
+    int const offsets[] = {(n-1), 0};
+    int const directions[] = {-1, 1};
+    uint8_t const off = offsets[static_cast<int>(is_big_endian)];
+    int const dir = directions[static_cast<int>(is_big_endian)];
+    for(int i = 0; i < n; ++i)
     {
-        std::for_each(converter.value.bytes.begin(), converter.value.bytes.end(), f);
-    }
-    else
-    {
-        std::for_each(converter.value.bytes.rbegin(), converter.value.bytes.rend(), f);
+        out.push_back(converter.bytes[off + dir * i]);
     }
 }
 
-static void dump(NullStruct, std::string &out) {
+inline void dump(NullStruct, std::string &out) {
     out.push_back(0xc0);
 }
 
-static void dump(float value, std::string &out) {
+inline void dump(float value, std::string &out) {
     out.push_back(0xca);
     dump_data(value, out);
 }
 
-static void dump(double value, std::string &out) {
+inline void dump(double value, std::string &out) {
     out.push_back(0xcb);
     dump_data(value, out);
 }
 
-static void dump(uint8_t value, std::string &out) {
+inline void dump(uint8_t value, std::string &out) {
     if(128 <= value)
     {
         out.push_back(0xcc);
@@ -125,7 +117,7 @@ static void dump(uint8_t value, std::string &out) {
     out.push_back(value);
 }
 
-static void dump(uint16_t value, std::string &out) {
+inline void dump(uint16_t value, std::string &out) {
     if( value < (1 << 8) )
     {
         dump(static_cast<uint8_t>(value), out );
@@ -137,7 +129,7 @@ static void dump(uint16_t value, std::string &out) {
     }
 }
 
-static void dump(uint32_t value, std::string &out) {
+inline void dump(uint32_t value, std::string &out) {
     if( value < (1 << 16) )
     {
         dump(static_cast<uint16_t>(value), out );
@@ -149,7 +141,7 @@ static void dump(uint32_t value, std::string &out) {
     }
 }
 
-static void dump(uint64_t value, std::string &out) {
+inline void dump(uint64_t value, std::string &out) {
     if( value < (1ULL << 32) )
     {
         dump(static_cast<uint32_t>(value), out );
@@ -162,7 +154,7 @@ static void dump(uint64_t value, std::string &out) {
 }
 
 
-static void dump(int8_t value, std::string &out) {
+inline void dump(int8_t value, std::string &out) {
     if( value < -32 )
     {
         out.push_back(0xd0);
@@ -170,7 +162,7 @@ static void dump(int8_t value, std::string &out) {
     out.push_back(value);
 }
 
-static void dump(int16_t value, std::string &out) {
+inline void dump(int16_t value, std::string &out) {
     if( value < -(1 << 7) )
     {
         out.push_back(0xd1);
@@ -186,7 +178,7 @@ static void dump(int16_t value, std::string &out) {
     }
 }
 
-static void dump(int32_t value, std::string &out) {
+inline void dump(int32_t value, std::string &out) {
     if( value < -(1 << 15) )
     {
         out.push_back(0xd2);
@@ -202,7 +194,7 @@ static void dump(int32_t value, std::string &out) {
     }
 }
 
-static void dump(int64_t value, std::string &out) {
+inline void dump(int64_t value, std::string &out) {
     if( value < -(1LL << 31) )
     {
         out.push_back(0xd3);
@@ -218,12 +210,12 @@ static void dump(int64_t value, std::string &out) {
     }
 }
 
-static void dump(bool value, std::string &out) {
+inline void dump(bool value, std::string &out) {
     const uint8_t msgpack_value = (value) ? 0xc3 : 0xc2;
     out.push_back(msgpack_value);
 }
 
-static void dump(const std::string& value, std::string &out) {
+inline void dump(const std::string& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 0x1f)
     {
@@ -232,21 +224,18 @@ static void dump(const std::string& value, std::string &out) {
     }
     else if(len <= 0xff)
     {
-        uint8_t const length = static_cast<uint8_t>(len);
         out.push_back(0xd9);
-        out.push_back(length);
+        out.push_back(static_cast<uint8_t>(len));
     }
     else if(len <= 0xffff)
     {
-        uint16_t const length = static_cast<uint16_t>(len);
         out.push_back(0xda);
-        dump_data(length, out);
+        dump_data(static_cast<uint16_t>(len), out);
     }
     else if(len <= 0xffffffff)
     {
-        uint32_t const length = static_cast<uint32_t>(len);
         out.push_back(0xdb);
-        dump_data(length, out);
+        dump_data(static_cast<uint32_t>(len), out);
     }
     else
     {
@@ -258,7 +247,7 @@ static void dump(const std::string& value, std::string &out) {
     });
 }
 
-static void dump(const MsgPack::array& value, std::string &out) {
+inline void dump(const MsgPack::array& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 15)
     {
@@ -267,15 +256,13 @@ static void dump(const MsgPack::array& value, std::string &out) {
     }
     else if(len <= 0xffff)
     {
-        uint16_t const length = static_cast<uint16_t>(len);
         out.push_back(0xdc);
-        dump_data(length, out);
+        dump_data(static_cast<uint16_t>(len), out);
     }
     else if(len <= 0xffffffff)
     {
-        uint32_t const length = static_cast<uint32_t>(len);
         out.push_back(0xdd);
-        dump_data(length, out);
+        dump_data(static_cast<uint32_t>(len), out);
     }
     else
     {
@@ -287,7 +274,7 @@ static void dump(const MsgPack::array& value, std::string &out) {
     });
 }
 
-static void dump(const MsgPack::object& value, std::string &out) {
+inline void dump(const MsgPack::object& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 15)
     {
@@ -296,15 +283,13 @@ static void dump(const MsgPack::object& value, std::string &out) {
     }
     else if(len <= 0xffff)
     {
-        uint16_t const length = static_cast<uint16_t>(len);
         out.push_back(0xde);
-        dump_data(length, out);
+        dump_data(static_cast<uint16_t>(len), out);
     }
     else if(len <= 0xffffffff)
     {
-        uint32_t const length = static_cast<uint32_t>(len);
         out.push_back(0xdf);
-        dump_data(length, out);
+        dump_data(static_cast<uint32_t>(len), out);
     }
     else
     {
@@ -317,25 +302,22 @@ static void dump(const MsgPack::object& value, std::string &out) {
     });
 }
 
-static void dump(const MsgPack::binary& value, std::string &out) {
+inline void dump(const MsgPack::binary& value, std::string &out) {
     size_t const len = value.size();
     if(len <= 0xff)
     {
-        uint8_t const length = static_cast<uint8_t>(len);
         out.push_back(0xc4);
-        dump_data(length, out);
+        dump_data(static_cast<uint8_t>(len), out);
     }
     else if(len <= 0xffff)
     {
-        uint16_t const length = static_cast<uint16_t>(len);
         out.push_back(0xc5);
-        dump_data(length, out);
+        dump_data(static_cast<uint16_t>(len), out);
     }
     else if(len <= 0xffffffff)
     {
-        uint32_t const length = static_cast<uint32_t>(len);
         out.push_back(0xc6);
-        dump_data(length, out);
+        dump_data(static_cast<uint32_t>(len), out);
     }
     else
     {
@@ -347,7 +329,7 @@ static void dump(const MsgPack::binary& value, std::string &out) {
     });
 }
 
-static void dump(const MsgPack::extension& value, std::string &out) {
+inline void dump(const MsgPack::extension& value, std::string &out) {
     const uint8_t type = std::get<0>( value );
     const MsgPack::binary& data = std::get<1>( value );
     const size_t len = data.size();
@@ -368,28 +350,23 @@ static void dump(const MsgPack::extension& value, std::string &out) {
         out.push_back(0xd8);
     }
     else if(len <= 0xff) {
-        uint8_t const length = static_cast<uint8_t>(len);
         out.push_back(0xc7);
-        out.push_back(length);
+        out.push_back(static_cast<uint8_t>(len));
     }
     else if(len <= 0xffff) {
-        uint16_t const length = static_cast<uint16_t>(len);
         out.push_back(0xc8);
-        dump_data(length, out);
+        dump_data(static_cast<uint16_t>(len), out);
     }
     else if(len <= 0xffffffff) {
-        uint32_t const length = static_cast<uint32_t>(len);
         out.push_back(0xc9);
-        dump_data(length, out);
+        dump_data(static_cast<uint32_t>(len), out);
     }
     else {
         throw std::runtime_error("exceeded maximum data length");
     }
 
     out.push_back(type);
-    std::for_each(std::begin(data), std::end(data), [&out](uint8_t const& v){
-        out.push_back(v);
-    });
+    std::copy(std::begin(data), std::end(data), std::back_inserter(out));
 }
 }
 
