@@ -119,7 +119,7 @@ bool is_benchmark(void) {
 }
 
 const char* test_version(void) {
-    return "0.0.8";
+    return "0.0.9";
 }
 
 const char* test_language(void) {
