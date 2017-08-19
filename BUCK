@@ -92,6 +92,7 @@ prebuilt_cxx_library(
 cxx_library(
   name = 'msgpack-c',
   visibility = [ 'PUBLIC', ],
+  link_style = 'static',
   deps = [
     ':msgpackc',
   ]
