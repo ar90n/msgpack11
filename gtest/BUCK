@@ -1,0 +1,42 @@
+remote_file(
+  name = 'googletest-src',
+  url = 'https://github.com/google/googletest/archive/release-1.8.0.zip',
+  sha1 = '667f873ab7a4d246062565fad32fb6d8e203ee73',
+  type = 'exploded_zip',
+)
+
+genrule(
+  name = 'googletest-build',
+  cmd = 'install -d $(location :googletest-src)/googletest-release-1.8.0/build && \
+         cd $(location :googletest-src)/googletest-release-1.8.0/build && \
+         cmake -DCMAKE_INSTALL_PREFIX=$OUT .. && \
+         make && \
+         make install',
+  out = '.',
+)
+
+prebuilt_cxx_library(
+  name = 'gtest',
+  visibility = [ 'PUBLIC', ],
+  lib_dir = '$(location :googletest-build)/lib',
+  include_dirs = ['$(location :googletest-build)/include'],
+)
+
+prebuilt_cxx_library(
+  name = 'gtest_main',
+  visibility = [ 'PUBLIC', ],
+  lib_dir = '$(location :googletest-build)/lib',
+  include_dirs = ['$(location :googletest-build)/include'],
+)
+
+cxx_library(
+  name = 'googletest',
+  exported_linker_flags = [
+    '-pthread',
+  ],
+  visibility = [ 'PUBLIC', ],
+  deps = [
+    ':gtest',
+    ':gtest_main',
+  ]
+)

@@ -1,0 +1,2 @@
+[cxx]
+    enable_deprecated_prebuilt_cxx_library_api = true

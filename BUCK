@@ -1,8 +1,43 @@
-include_defs('//BUCKAROO_DEPS')
+try:
+  include_defs('//BUCKAROO_DEPS')
+except:
+  BUCKAROO_DEPS = ['//gtest:googletest']
 
 with allow_unsafe_import():
-    from os import path
+  from os import path
 path_to_root = path.dirname(path.realpath(__file__))
+
+cxx_library(
+  name = 'gtest',
+  header_namespace = '',
+  srcs = [
+    'googletest/src/gtest-all.cc',
+    'googletest/src/gtest_main.cc',
+  ],
+  headers = subdir_glob([
+    ('googletest', 'src/*.h'),
+    ('googletest', 'src/*.cc'),
+    ('googletest/include', 'internal/**/*.h'),
+  ]),
+  exported_headers = subdir_glob([
+    ('googletest/include', '**/*.h'),
+  ], excludes = [
+    'googletest/include/internal/**/*.h',
+  ]),
+  preprocessor_flags = [
+    '-U_STRICT_ANSI_',
+  ],
+  compiler_flags = [
+    '-std=c++14',
+  ],
+  platform_linker_flags = [
+    ('android', []),
+    ('', ['-lpthread']),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
 
 cxx_library(
   name = 'msgpack11',
