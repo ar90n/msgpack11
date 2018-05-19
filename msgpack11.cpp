@@ -324,9 +324,7 @@ inline void dump(const MsgPack::binary& value, std::string &out) {
         throw std::runtime_error("exceeded maximum data length");
     }
 
-    std::for_each(std::begin(value), std::end(value), [&out](MsgPack::binary::value_type const& v){
-        out.push_back(v);
-    });
+    out.append(std::begin(value), std::end(value));
 }
 
 inline void dump(const MsgPack::extension& value, std::string &out) {
