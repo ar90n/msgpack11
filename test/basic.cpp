@@ -725,3 +725,411 @@ TEST(MSGPACK_OPERATOR, simple_operator_others)
     EXPECT_TRUE(object_value < extension_value);
     EXPECT_FALSE(extension_value < nul_value);
 }
+
+TEST(MSGPACK_PREDICATES, predicates_null)
+{
+    msgpack11::MsgPack null_value;
+    EXPECT_TRUE(null_value.is_null());
+    EXPECT_FALSE(null_value.is_bool());
+    EXPECT_FALSE(null_value.is_number());
+    EXPECT_FALSE(null_value.is_float32());
+    EXPECT_FALSE(null_value.is_float64());
+    EXPECT_FALSE(null_value.is_int());
+    EXPECT_FALSE(null_value.is_int8());
+    EXPECT_FALSE(null_value.is_int16());
+    EXPECT_FALSE(null_value.is_int32());
+    EXPECT_FALSE(null_value.is_int64());
+    EXPECT_FALSE(null_value.is_uint8());
+    EXPECT_FALSE(null_value.is_uint16());
+    EXPECT_FALSE(null_value.is_uint32());
+    EXPECT_FALSE(null_value.is_uint64());
+    EXPECT_FALSE(null_value.is_string());
+    EXPECT_FALSE(null_value.is_array());
+    EXPECT_FALSE(null_value.is_binary());
+    EXPECT_FALSE(null_value.is_object());
+    EXPECT_FALSE(null_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_float)
+{
+    msgpack11::MsgPack float_value(0.0f);
+    EXPECT_FALSE(float_value.is_null());
+    EXPECT_FALSE(float_value.is_bool());
+    EXPECT_TRUE(float_value.is_number());
+    EXPECT_TRUE(float_value.is_float32());
+    EXPECT_FALSE(float_value.is_float64());
+    EXPECT_FALSE(float_value.is_int());
+    EXPECT_FALSE(float_value.is_int8());
+    EXPECT_FALSE(float_value.is_int16());
+    EXPECT_FALSE(float_value.is_int32());
+    EXPECT_FALSE(float_value.is_int64());
+    EXPECT_FALSE(float_value.is_uint8());
+    EXPECT_FALSE(float_value.is_uint16());
+    EXPECT_FALSE(float_value.is_uint32());
+    EXPECT_FALSE(float_value.is_uint64());
+    EXPECT_FALSE(float_value.is_string());
+    EXPECT_FALSE(float_value.is_array());
+    EXPECT_FALSE(float_value.is_binary());
+    EXPECT_FALSE(float_value.is_object());
+    EXPECT_FALSE(float_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_double)
+{
+    msgpack11::MsgPack double_value(0.0);
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_TRUE(double_value.is_float64());
+    EXPECT_FALSE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_int8)
+{
+    msgpack11::MsgPack double_value(static_cast<int8_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_TRUE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_int16)
+{
+    msgpack11::MsgPack double_value(static_cast<int16_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_TRUE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_int32)
+{
+    msgpack11::MsgPack double_value(static_cast<int32_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_TRUE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_int64)
+{
+    msgpack11::MsgPack double_value(static_cast<int64_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_TRUE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_uint8)
+{
+    msgpack11::MsgPack double_value(static_cast<uint8_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_TRUE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_uint16)
+{
+    msgpack11::MsgPack double_value(static_cast<uint16_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_TRUE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_uint32)
+{
+    msgpack11::MsgPack double_value(static_cast<uint32_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_TRUE(double_value.is_uint32());
+    EXPECT_FALSE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_uint64)
+{
+    msgpack11::MsgPack double_value(static_cast<uint64_t>(0x00));
+    EXPECT_FALSE(double_value.is_null());
+    EXPECT_FALSE(double_value.is_bool());
+    EXPECT_TRUE(double_value.is_number());
+    EXPECT_FALSE(double_value.is_float32());
+    EXPECT_FALSE(double_value.is_float64());
+    EXPECT_TRUE(double_value.is_int());
+    EXPECT_FALSE(double_value.is_int8());
+    EXPECT_FALSE(double_value.is_int16());
+    EXPECT_FALSE(double_value.is_int32());
+    EXPECT_FALSE(double_value.is_int64());
+    EXPECT_FALSE(double_value.is_uint8());
+    EXPECT_FALSE(double_value.is_uint16());
+    EXPECT_FALSE(double_value.is_uint32());
+    EXPECT_TRUE(double_value.is_uint64());
+    EXPECT_FALSE(double_value.is_string());
+    EXPECT_FALSE(double_value.is_array());
+    EXPECT_FALSE(double_value.is_binary());
+    EXPECT_FALSE(double_value.is_object());
+    EXPECT_FALSE(double_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_bool)
+{
+    msgpack11::MsgPack bool_value(true);
+    EXPECT_FALSE(bool_value.is_null());
+    EXPECT_TRUE(bool_value.is_bool());
+    EXPECT_FALSE(bool_value.is_number());
+    EXPECT_FALSE(bool_value.is_float32());
+    EXPECT_FALSE(bool_value.is_float64());
+    EXPECT_FALSE(bool_value.is_int());
+    EXPECT_FALSE(bool_value.is_int8());
+    EXPECT_FALSE(bool_value.is_int16());
+    EXPECT_FALSE(bool_value.is_int32());
+    EXPECT_FALSE(bool_value.is_int64());
+    EXPECT_FALSE(bool_value.is_uint8());
+    EXPECT_FALSE(bool_value.is_uint16());
+    EXPECT_FALSE(bool_value.is_uint32());
+    EXPECT_FALSE(bool_value.is_uint64());
+    EXPECT_FALSE(bool_value.is_string());
+    EXPECT_FALSE(bool_value.is_array());
+    EXPECT_FALSE(bool_value.is_binary());
+    EXPECT_FALSE(bool_value.is_object());
+    EXPECT_FALSE(bool_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_string)
+{
+    msgpack11::MsgPack string_value(std::string{});
+    EXPECT_FALSE(string_value.is_null());
+    EXPECT_FALSE(string_value.is_bool());
+    EXPECT_FALSE(string_value.is_number());
+    EXPECT_FALSE(string_value.is_float32());
+    EXPECT_FALSE(string_value.is_float64());
+    EXPECT_FALSE(string_value.is_int());
+    EXPECT_FALSE(string_value.is_int8());
+    EXPECT_FALSE(string_value.is_int16());
+    EXPECT_FALSE(string_value.is_int32());
+    EXPECT_FALSE(string_value.is_int64());
+    EXPECT_FALSE(string_value.is_uint8());
+    EXPECT_FALSE(string_value.is_uint16());
+    EXPECT_FALSE(string_value.is_uint32());
+    EXPECT_FALSE(string_value.is_uint64());
+    EXPECT_TRUE(string_value.is_string());
+    EXPECT_FALSE(string_value.is_array());
+    EXPECT_FALSE(string_value.is_binary());
+    EXPECT_FALSE(string_value.is_object());
+    EXPECT_FALSE(string_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_array)
+{
+    msgpack11::MsgPack array_value(msgpack11::MsgPack::array{});
+    EXPECT_FALSE(array_value.is_null());
+    EXPECT_FALSE(array_value.is_bool());
+    EXPECT_FALSE(array_value.is_number());
+    EXPECT_FALSE(array_value.is_float32());
+    EXPECT_FALSE(array_value.is_float64());
+    EXPECT_FALSE(array_value.is_int());
+    EXPECT_FALSE(array_value.is_int8());
+    EXPECT_FALSE(array_value.is_int16());
+    EXPECT_FALSE(array_value.is_int32());
+    EXPECT_FALSE(array_value.is_int64());
+    EXPECT_FALSE(array_value.is_uint8());
+    EXPECT_FALSE(array_value.is_uint16());
+    EXPECT_FALSE(array_value.is_uint32());
+    EXPECT_FALSE(array_value.is_uint64());
+    EXPECT_FALSE(array_value.is_string());
+    EXPECT_TRUE(array_value.is_array());
+    EXPECT_FALSE(array_value.is_binary());
+    EXPECT_FALSE(array_value.is_object());
+    EXPECT_FALSE(array_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_binary)
+{
+    msgpack11::MsgPack binary_value(msgpack11::MsgPack::binary{});
+    EXPECT_FALSE(binary_value.is_null());
+    EXPECT_FALSE(binary_value.is_bool());
+    EXPECT_FALSE(binary_value.is_number());
+    EXPECT_FALSE(binary_value.is_float32());
+    EXPECT_FALSE(binary_value.is_float64());
+    EXPECT_FALSE(binary_value.is_int());
+    EXPECT_FALSE(binary_value.is_int8());
+    EXPECT_FALSE(binary_value.is_int16());
+    EXPECT_FALSE(binary_value.is_int32());
+    EXPECT_FALSE(binary_value.is_int64());
+    EXPECT_FALSE(binary_value.is_uint8());
+    EXPECT_FALSE(binary_value.is_uint16());
+    EXPECT_FALSE(binary_value.is_uint32());
+    EXPECT_FALSE(binary_value.is_uint64());
+    EXPECT_FALSE(binary_value.is_string());
+    EXPECT_FALSE(binary_value.is_array());
+    EXPECT_TRUE(binary_value.is_binary());
+    EXPECT_FALSE(binary_value.is_object());
+    EXPECT_FALSE(binary_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_object)
+{
+    msgpack11::MsgPack object_value(msgpack11::MsgPack::object{});
+    EXPECT_FALSE(object_value.is_null());
+    EXPECT_FALSE(object_value.is_bool());
+    EXPECT_FALSE(object_value.is_number());
+    EXPECT_FALSE(object_value.is_float32());
+    EXPECT_FALSE(object_value.is_float64());
+    EXPECT_FALSE(object_value.is_int());
+    EXPECT_FALSE(object_value.is_int8());
+    EXPECT_FALSE(object_value.is_int16());
+    EXPECT_FALSE(object_value.is_int32());
+    EXPECT_FALSE(object_value.is_int64());
+    EXPECT_FALSE(object_value.is_uint8());
+    EXPECT_FALSE(object_value.is_uint16());
+    EXPECT_FALSE(object_value.is_uint32());
+    EXPECT_FALSE(object_value.is_uint64());
+    EXPECT_FALSE(object_value.is_string());
+    EXPECT_FALSE(object_value.is_array());
+    EXPECT_FALSE(object_value.is_binary());
+    EXPECT_TRUE(object_value.is_object());
+    EXPECT_FALSE(object_value.is_extension());
+}
+
+TEST(MSGPACK_PREDICATES, predicates_extension)
+{
+    msgpack11::MsgPack extension_value(msgpack11::MsgPack::extension{});
+    EXPECT_FALSE(extension_value.is_null());
+    EXPECT_FALSE(extension_value.is_bool());
+    EXPECT_FALSE(extension_value.is_number());
+    EXPECT_FALSE(extension_value.is_float32());
+    EXPECT_FALSE(extension_value.is_float64());
+    EXPECT_FALSE(extension_value.is_int());
+    EXPECT_FALSE(extension_value.is_int8());
+    EXPECT_FALSE(extension_value.is_int16());
+    EXPECT_FALSE(extension_value.is_int32());
+    EXPECT_FALSE(extension_value.is_int64());
+    EXPECT_FALSE(extension_value.is_uint8());
+    EXPECT_FALSE(extension_value.is_uint16());
+    EXPECT_FALSE(extension_value.is_uint32());
+    EXPECT_FALSE(extension_value.is_uint64());
+    EXPECT_FALSE(extension_value.is_string());
+    EXPECT_FALSE(extension_value.is_array());
+    EXPECT_FALSE(extension_value.is_binary());
+    EXPECT_FALSE(extension_value.is_object());
+    EXPECT_TRUE(extension_value.is_extension());
+}
