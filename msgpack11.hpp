@@ -25,24 +25,27 @@ class MsgPackValue;
 class MsgPack final {
 public:
     // Types
+    // NB: all ints are numbers but not all numbers are ints.
     enum Type {
-        NUL,
-        FLOAT32,
-        FLOAT64,
-        INT8,
-        INT16,
-        INT32,
-        INT64,
-        UINT8,
-        UINT16,
-        UINT32,
-        UINT64,
-        BOOL,
-        STRING,
-        BINARY,
-        ARRAY,
-        OBJECT,
-        EXTENSION
+        NUMBER      = 1,
+        INT         = 2 | NUMBER,
+        NUL         = 1 << 2,
+        FLOAT32     = 2 << 2 | NUMBER,
+        FLOAT64     = 3 << 2 | NUMBER,
+        INT8        = 4 << 2 | INT,
+        INT16       = 5 << 2 | INT,
+        INT32       = 6 << 2 | INT,
+        INT64       = 7 << 2 | INT,
+        UINT8       = 8 << 2 | INT,
+        UINT16      = 9 << 2 | INT,
+        UINT32      = 10 << 2 | INT,
+        UINT64      = 11 << 2 | INT,
+        BOOL        = 12 << 2,
+        STRING      = 13 << 2,
+        BINARY      = 14 << 2,
+        ARRAY       = 15 << 2,
+        OBJECT      = 16 << 2,
+        EXTENSION   = 17 << 2
     };
 
     // Array and object typedefs
@@ -112,10 +115,10 @@ public:
 
     bool is_null()      const { return type() == NUL; }
     bool is_bool()      const { return type() == BOOL; }
-    bool is_number()    const { return type() == FLOAT64; }
+    bool is_number()    const { return type() & NUMBER; }
     bool is_float32()   const { return type() == FLOAT32; }
     bool is_float64()   const { return type() == FLOAT64; }
-    bool is_int()       const { return type() == INT32; }
+    bool is_int()       const { return type() & INT; }
     bool is_int8()      const { return type() == INT8; }
     bool is_int16()     const { return type() == INT16; }
     bool is_int32()     const { return type() == INT32; }
