@@ -5,6 +5,10 @@
 #include <map>
 #include <memory>
 #include <initializer_list>
+#include <istream>
+#include <ostream>
+#include <sstream>
+
 
 #ifdef _MSC_VER
     #if _MSC_VER <= 1800 // VS 2013
@@ -168,12 +172,19 @@ public:
     const MsgPack & operator[](const std::string &key) const;
 
     // Serialize.
-    void dump(std::string &out) const;
-    std::string dump() const {
-        std::string out;
-        dump(out);
-        return out;
+    void dump(std::string &out) const {
+        std::string ss;
+        ss << *this;
+        out = ss.str();
     }
+    
+    std::string dump() const {
+        std::string ss;
+        ss << *this;
+        return ss.str();
+    }
+    
+    friend std::ostream& operator<<(std::ostream& os, const MsgPack& msgpack);
 
     // Parse. If parse fails, return MsgPack() and assign an error message to err.
     static MsgPack parse(const std::string & in, std::string & err);
