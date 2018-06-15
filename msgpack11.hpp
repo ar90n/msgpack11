@@ -118,7 +118,7 @@ public:
     bool is_number()    const { return type() & NUMBER; }
     bool is_float32()   const { return type() == FLOAT32; }
     bool is_float64()   const { return type() == FLOAT64; }
-    bool is_int()       const { return type() & INT; }
+    bool is_int()       const { return (type() & INT) == INT; }
     bool is_int8()      const { return type() == INT8; }
     bool is_int16()     const { return type() == INT16; }
     bool is_int32()     const { return type() == INT32; }
