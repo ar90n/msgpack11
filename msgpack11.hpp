@@ -173,21 +173,31 @@ public:
 
     // Serialize.
     void dump(std::string &out) const {
-        std::string ss;
+        std::stringstream ss;
         ss << *this;
         out = ss.str();
     }
     
     std::string dump() const {
-        std::string ss;
+        std::stringstream ss;
         ss << *this;
         return ss.str();
     }
     
     friend std::ostream& operator<<(std::ostream& os, const MsgPack& msgpack);
+    // Parse. If parse fails, set msgpack to MsgPack() and
+    // sets failbit on stream.
+    friend std::istream& operator>>(std::istream& is, MsgPack& msgpack);
 
-    // Parse. If parse fails, return MsgPack() and assign an error message to err.
+    // Parse. If parse fails, return MsgPack() and assign
+    // an error message to err.
     static MsgPack parse(const std::string & in, std::string & err);
+    // Parse. If parse fails, return MsgPack(), sets failbit on stream and and
+    // assign an error message to err.
+    static MsgPack parse(std::istream& is, std::string &err);
+    // Parse (without the need to default initialise object first).
+    // If parse fails, return MsgPack() and sets failbit on stream.
+    static MsgPack parse(std::istream& is);
     static MsgPack parse(const char * in, size_t len, std::string & err) {
         if (in) {
             return parse(std::string(in,in+len), err);
