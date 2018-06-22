@@ -11,6 +11,7 @@ LIST (APPEND check_PROGRAMS
      array.cpp
      basic.cpp
      raw.cpp
+     incomplete_data.cpp
      object.cpp
      multi.cpp
 )
