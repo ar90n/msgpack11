@@ -1,5 +1,4 @@
 [![Build][build-shiled]][build-url]
-[![Version][version-shield]][version-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT][license-shield]][license-url]
 
@@ -78,9 +77,7 @@ License
 This software is released under the MIT License, see LICENSE.txt.
 
 
-[version-shield]: https://img.shields.io/pypi/v/msgpack11?style=flat
-[version-url]: https://pypi.org/project/msgpack11/
-[build-shiled]: https://img.shields.io/github/workflow/status/ar90n/msgpack11/CI%20testing/main
+[build-shiled]: https://img.shields.io/github/workflow/status/ar90n/msgpack11/CI/master
 [build-url]: https://github.com/ar90n/msgpack11/actions/workflows/ci.yml
 [issues-shield]: https://img.shields.io/github/issues/ar90n/msgpack11.svg?style=flat
 [issues-url]: https://github.com/ar90n/msgpack11/issues
