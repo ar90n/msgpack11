@@ -13,7 +13,7 @@ env:
 
 jobs:
   linux:
-    name: ${{ matrix.os }}.${{ matrix.compiler.compiler }}.${{ matrix.flavor }}
+    name: ${{ matrix.os }}.${{ matrix.compiler.compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,11 +22,6 @@ jobs:
         compiler:
           - { compiler: GNU,  CC: gcc,   CXX: g++,     GCOV: gcov }
           - { compiler: LLVM, CC: clang, CXX: clang++ }
-        flavor: [ RelWithDebInfo, Coverage ]
-        exclude:
-          - os: linux
-            compiler: { compiler: LLVM, CC: clang, CXX: clang++ }
-            flavor: Coverage
 
     steps:
     - uses: actions/checkout@v3
@@ -35,12 +30,12 @@ jobs:
     - name: install packages
       run: |
        sudo apt-get update -y
-       sudo apt-get install -y googletest zlib1g-dev clang++-12 g++
+       sudo apt-get install -y googletest zlib1g-dev clang++-12 g++ cmake
 
     - name: install google test
       run: |
        cd /usr/src/googletest
-       sudo cmake -C .
+       sudo cmake -DCMAKE_CXX_COMPILER=$CXX .
        sudo make
        sudo make install
       env:
@@ -51,7 +46,7 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=$CXX
       env:
         CC: ${{ matrix.compiler.CC }}
         CXX: ${{ matrix.compiler.CXX }}
