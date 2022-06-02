@@ -33,7 +33,9 @@ jobs:
 
 
     - name: install packages
-      run: sudo apt-get install -y googletest zlib1g-dev clang++-14 g++
+      run: |
+       sudo apt-get update -y
+       sudo apt-get install -y googletest zlib1g-dev clang++-14 g++
 
     - name: install google test
       run: |
