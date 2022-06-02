@@ -409,21 +409,21 @@ protected:
 bool equal_uint64_int64( uint64_t uint64_value, int64_t int64_value )
 {
     bool const is_positive = 0 <= int64_value;
-    bool const is_leq_int64_max = uint64_value <= std::numeric_limits<int64_t>::max();
+    bool const is_leq_int64_max = uint64_value <= static_cast<std::uint64_t>(std::numeric_limits<int64_t>::max());
     return is_positive && is_leq_int64_max && ( uint64_value == static_cast<uint64_t>(int64_value));
 }
 
 bool less_uint64_int64( uint64_t uint64_value, int64_t int64_value )
 {
     bool const is_positive = 0 <= int64_value;
-    bool const is_leq_int64_max = uint64_value <= std::numeric_limits<int64_t>::max();
+    bool const is_leq_int64_max = uint64_value <= static_cast<std::uint64_t>(std::numeric_limits<int64_t>::max());
     return is_positive && is_leq_int64_max && ( uint64_value < static_cast<uint64_t>(int64_value));
 }
 
 bool less_int64_uint64( int64_t int64_value, uint64_t uint64_value )
 {
     bool const is_negative = int64_value < 0;
-    bool const is_gt_int64_max = std::numeric_limits<int64_t>::max() < uint64_value;
+    bool const is_gt_int64_max = static_cast<std::uint64_t>(std::numeric_limits<int64_t>::max()) < uint64_value;
     return is_negative || is_gt_int64_max || ( static_cast<uint64_t>(int64_value) < uint64_value );
 }
 
