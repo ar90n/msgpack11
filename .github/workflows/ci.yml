@@ -25,9 +25,9 @@ jobs:
       run: |
        sudo apt-get install -y googletest zlib1g-dev
        cd /usr/src/googletest
-       cmake .
-       make
-       make install
+       sudo cmake .
+       sudo make
+       sudo make install
        
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
