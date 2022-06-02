@@ -1,4 +1,4 @@
-name: CMake
+name: CI
 
 on:
   push:
@@ -69,4 +69,3 @@ jobs:
         CC: ${{ matrix.compiler.CC }}
         CXX: ${{ matrix.compiler.CXX }}
         GCOV: ${{ matrix.compiler.GCOV }}
-      
