@@ -1,6 +1,5 @@
 [![Build][build-shiled]][build-url]
 [![Version][version-shield]][version-url]
-[![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT][license-shield]][license-url]
 
