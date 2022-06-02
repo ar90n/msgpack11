@@ -20,12 +20,12 @@ jobs:
       matrix:
         os: [ linux ]
         compiler:
-          - { compiler: GNU,  CC: gcc-10,   CXX: g++-10,     GCOV: gcov-10 }
-          - { compiler: LLVM, CC: clang-10, CXX: clang++-10 }
+          - { compiler: GNU,  CC: gcc,   CXX: g++,     GCOV: gcov }
+          - { compiler: LLVM, CC: clang, CXX: clang++ }
         flavor: [ RelWithDebInfo, Coverage ]
         exclude:
           - os: linux
-            compiler: { compiler: LLVM, CC: clang-10, CXX: clang++-10 }
+            compiler: { compiler: LLVM, CC: clang, CXX: clang++ }
             flavor: Coverage
 
     steps:
@@ -33,7 +33,7 @@ jobs:
 
 
     - name: install packages
-      run: sudo apt-get install -y googletest zlib1g-dev clang++-10 g++-10
+      run: sudo apt-get install -y googletest zlib1g-dev clang++-14 g++
 
     - name: install google test
       run: |
