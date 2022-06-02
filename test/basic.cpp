@@ -151,7 +151,7 @@ template<> struct ValueTypeTraits<double> {
 template <typename T>
 class IntegerToFloatingPointTest : public testing::Test {
 };
-TYPED_TEST_CASE_P(IntegerToFloatingPointTest);
+TYPED_TEST_SUITE_P(IntegerToFloatingPointTest);
 
 TYPED_TEST_P(IntegerToFloatingPointTest, simple_buffer)
 {
@@ -175,14 +175,14 @@ TYPED_TEST_P(IntegerToFloatingPointTest, simple_buffer)
     }
 }
 
-REGISTER_TYPED_TEST_CASE_P(IntegerToFloatingPointTest,
+REGISTER_TYPED_TEST_SUITE_P(IntegerToFloatingPointTest,
                            simple_buffer);
 
 typedef testing::Types<TypePair<float, int64_t>,
                        TypePair<float, uint64_t>,
                        TypePair<double, int64_t>,
                        TypePair<double, uint64_t> > IntegerToFloatingPointTestTypes;
-INSTANTIATE_TYPED_TEST_CASE_P(IntegerToFloatingPointTestInstance,
+INSTANTIATE_TYPED_TEST_SUITE_P(IntegerToFloatingPointTestInstance,
                               IntegerToFloatingPointTest,
                               IntegerToFloatingPointTestTypes);
 
