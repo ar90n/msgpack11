@@ -77,7 +77,7 @@ License
 This software is released under the MIT License, see LICENSE.txt.
 
 
-[build-shiled]: https://img.shields.io/github/workflow/status/ar90n/msgpack11/CI/master
+[build-shiled]: https://img.shields.io/github/actions/workflow/status/ar90n/msgpack11/ci.yml
 [build-url]: https://github.com/ar90n/msgpack11/actions/workflows/ci.yml
 [issues-shield]: https://img.shields.io/github/issues/ar90n/msgpack11.svg?style=flat
 [issues-url]: https://github.com/ar90n/msgpack11/issues
