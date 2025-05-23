@@ -2,6 +2,7 @@
 #include <tuple>
 #include <array>
 #include <algorithm>
+#include <functional>
 
 #include <msgpack11.hpp>
 

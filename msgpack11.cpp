@@ -11,6 +11,8 @@
 #include <functional>
 #include <stdexcept>
 #include <type_traits>
+#include <cstdint>
+#include <utility>
 
 namespace msgpack11 {
 
@@ -384,7 +386,7 @@ protected:
 
     // Constructors
     explicit Value(const T &value) : m_value(value) {}
-    explicit Value(T &&value)      : m_value(move(value)) {}
+    explicit Value(T &&value)      : m_value(std::move(value)) {}
 
     // Get type tag
     MsgPack::Type type() const override {
@@ -627,7 +629,7 @@ class MsgPackString final : public Value<MsgPack::STRING, string> {
     const string &string_value() const override { return m_value; }
 public:
     explicit MsgPackString(const string &value) : Value(value) {}
-    explicit MsgPackString(string &&value)      : Value(move(value)) {}
+    explicit MsgPackString(string &&value)      : Value(std::move(value)) {}
 };
 
 class MsgPackArray final : public Value<MsgPack::ARRAY, MsgPack::array> {
@@ -635,14 +637,14 @@ class MsgPackArray final : public Value<MsgPack::ARRAY, MsgPack::array> {
     const MsgPack & operator[](size_t i) const override;
 public:
     explicit MsgPackArray(const MsgPack::array &value) : Value(value) {}
-    explicit MsgPackArray(MsgPack::array &&value)      : Value(move(value)) {}
+    explicit MsgPackArray(MsgPack::array &&value)      : Value(std::move(value)) {}
 };
 
 class MsgPackBinary final : public Value<MsgPack::BINARY, MsgPack::binary> {
     const MsgPack::binary &binary_items() const override { return m_value; }
 public:
     explicit MsgPackBinary(const MsgPack::binary &value) : Value(value) {}
-    explicit MsgPackBinary(MsgPack::binary &&value)      : Value(move(value)) {}
+    explicit MsgPackBinary(MsgPack::binary &&value)      : Value(std::move(value)) {}
 };
 
 class MsgPackObject final : public Value<MsgPack::OBJECT, MsgPack::object> {
@@ -650,14 +652,14 @@ class MsgPackObject final : public Value<MsgPack::OBJECT, MsgPack::object> {
     const MsgPack & operator[](const string &key) const override;
 public:
     explicit MsgPackObject(const MsgPack::object &value) : Value(value) {}
-    explicit MsgPackObject(MsgPack::object &&value)      : Value(move(value)) {}
+    explicit MsgPackObject(MsgPack::object &&value)      : Value(std::move(value)) {}
 };
 
 class MsgPackExtension final : public Value<MsgPack::EXTENSION, MsgPack::extension> {
     const MsgPack::extension &extension_items() const override { return m_value; }
 public:
     explicit MsgPackExtension(const MsgPack::extension &value) : Value(value) {}
-    explicit MsgPackExtension(MsgPack::extension &&value)      : Value(move(value)) {}
+    explicit MsgPackExtension(MsgPack::extension &&value)      : Value(std::move(value)) {}
 };
 
 class MsgPackNull final : public Value<MsgPack::NUL, NullStruct> {
@@ -709,16 +711,16 @@ MsgPack::MsgPack(uint32_t value)                   : m_ptr(make_shared<MsgPackUi
 MsgPack::MsgPack(uint64_t value)                   : m_ptr(make_shared<MsgPackUint64>(value)) {}
 MsgPack::MsgPack(bool value)                       : m_ptr(value ? statics().t : statics().f) {}
 MsgPack::MsgPack(const string &value)              : m_ptr(make_shared<MsgPackString>(value)) {}
-MsgPack::MsgPack(string &&value)                   : m_ptr(make_shared<MsgPackString>(move(value))) {}
+MsgPack::MsgPack(string &&value)                   : m_ptr(make_shared<MsgPackString>(std::move(value))) {}
 MsgPack::MsgPack(const char * value)               : m_ptr(make_shared<MsgPackString>(value)) {}
 MsgPack::MsgPack(const MsgPack::array &values)     : m_ptr(make_shared<MsgPackArray>(values)) {}
-MsgPack::MsgPack(MsgPack::array &&values)          : m_ptr(make_shared<MsgPackArray>(move(values))) {}
+MsgPack::MsgPack(MsgPack::array &&values)          : m_ptr(make_shared<MsgPackArray>(std::move(values))) {}
 MsgPack::MsgPack(const MsgPack::object &values)    : m_ptr(make_shared<MsgPackObject>(values)) {}
-MsgPack::MsgPack(MsgPack::object &&values)         : m_ptr(make_shared<MsgPackObject>(move(values))) {}
+MsgPack::MsgPack(MsgPack::object &&values)         : m_ptr(make_shared<MsgPackObject>(std::move(values))) {}
 MsgPack::MsgPack(const MsgPack::binary &values)    : m_ptr(make_shared<MsgPackBinary>(values)) {}
-MsgPack::MsgPack(MsgPack::binary &&values)         : m_ptr(make_shared<MsgPackBinary>(move(values))) {}
+MsgPack::MsgPack(MsgPack::binary &&values)         : m_ptr(make_shared<MsgPackBinary>(std::move(values))) {}
 MsgPack::MsgPack(const MsgPack::extension &values) : m_ptr(make_shared<MsgPackExtension>(values)) {}
-MsgPack::MsgPack(MsgPack::extension &&values)      : m_ptr(make_shared<MsgPackExtension>(move(values))) {}
+MsgPack::MsgPack(MsgPack::extension &&values)      : m_ptr(make_shared<MsgPackExtension>(std::move(values))) {}
 
 /* * * * * * * * * * * * * * * * * * * *
  * Accessors
