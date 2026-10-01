@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.10)
 project(msgpack11 VERSION 0.0.9 LANGUAGES CXX C)
 
 option(MSGPACK11_BUILD_TESTS "Build unit tests" ON)
